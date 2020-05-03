@@ -1,0 +1,39 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <AzureFunctionsVersion>v3</AzureFunctionsVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="3.1.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="3.1.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="3.1.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Twitter" Version="3.1.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.WsFederation" Version="3.1.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="3.1.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="3.1.3" />
+    <PackageReference Include="Microsoft.AspNetCore.MiddlewareAnalysis" Version="3.1.3" />
+    <PackageReference Include="Microsoft.AspNetCore.NodeServices" Version="3.1.3" />
+    <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.CosmosDB" Version="3.0.7" />
+    <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="3.0.6" />
+    <PackageReference Include="microsoft.aspnetcore.nodeservices" Version="3.1.3" />
+    <PackageReference Include="microsoft.aspnetcore.owin" Version="3.1.3" />
+    <PackageReference Include="microsoft.aspnetcore.server.kestrel.https" Version="2.2.0" />
+    <PackageReference Include="microsoft.aspnetcore.server.kestrel.transport.abstractions" Version="2.2.0" />
+    <PackageReference Include="microsoft.aspnetcore.spaservices" Version="3.1.3" />
+    <PackageReference Include="microsoft.aspnetcore.spaservices.extensions" Version="3.1.3" />
+    <PackageReference Include="microsoft.extensions.caching.sqlserver" Version="3.1.3" />
+    <PackageReference Include="microsoft.identitymodel.protocols.wsfederation" Version="5.5.0" />
+    <PackageReference Include="microsoft.identitymodel.tokens.saml" Version="5.5.0" />
+    <PackageReference Include="microsoft.identitymodel.xml" Version="5.5.0" />
+    <PackageReference Include="System.Net.WebSockets.WebSocketProtocol" Version="4.7.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="host.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="local.settings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+    </None>
+  </ItemGroup>
+</Project>

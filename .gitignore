@@ -1,0 +1,7 @@
+/.vs/*
+/ConsoleApp3.1/bin/*
+/ConsoleApp3.1/obj/*
+/ConsoleAppFramework/bin/*
+/ConsoleAppFramework/obj/*
+/packages/*
+/WebApplication2.2/obj/*

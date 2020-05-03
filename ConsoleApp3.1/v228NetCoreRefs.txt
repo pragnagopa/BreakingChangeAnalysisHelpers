@@ -1,0 +1,211 @@
+api-ms-win-core-console-l1-1-0.dll                    
+api-ms-win-core-datetime-l1-1-0.dll                   
+api-ms-win-core-debug-l1-1-0.dll                      
+api-ms-win-core-errorhandling-l1-1-0.dll              
+api-ms-win-core-file-l1-1-0.dll                       
+api-ms-win-core-file-l1-2-0.dll                       
+api-ms-win-core-file-l2-1-0.dll                       
+api-ms-win-core-handle-l1-1-0.dll                     
+api-ms-win-core-heap-l1-1-0.dll                       
+api-ms-win-core-interlocked-l1-1-0.dll                
+api-ms-win-core-libraryloader-l1-1-0.dll              
+api-ms-win-core-localization-l1-2-0.dll               
+api-ms-win-core-memory-l1-1-0.dll                     
+api-ms-win-core-namedpipe-l1-1-0.dll                  
+api-ms-win-core-processenvironment-l1-1-0.dll         
+api-ms-win-core-processthreads-l1-1-0.dll             
+api-ms-win-core-processthreads-l1-1-1.dll             
+api-ms-win-core-profile-l1-1-0.dll                    
+api-ms-win-core-rtlsupport-l1-1-0.dll                 
+api-ms-win-core-string-l1-1-0.dll                     
+api-ms-win-core-synch-l1-1-0.dll                      
+api-ms-win-core-synch-l1-2-0.dll                      
+api-ms-win-core-sysinfo-l1-1-0.dll                    
+api-ms-win-core-timezone-l1-1-0.dll                   
+api-ms-win-core-util-l1-1-0.dll                       
+api-ms-win-crt-conio-l1-1-0.dll                       
+api-ms-win-crt-convert-l1-1-0.dll                     
+api-ms-win-crt-environment-l1-1-0.dll                 
+api-ms-win-crt-filesystem-l1-1-0.dll                  
+api-ms-win-crt-heap-l1-1-0.dll                        
+api-ms-win-crt-locale-l1-1-0.dll                      
+api-ms-win-crt-math-l1-1-0.dll                        
+api-ms-win-crt-multibyte-l1-1-0.dll                   
+api-ms-win-crt-private-l1-1-0.dll                     
+api-ms-win-crt-process-l1-1-0.dll                     
+api-ms-win-crt-runtime-l1-1-0.dll                     
+api-ms-win-crt-stdio-l1-1-0.dll                       
+api-ms-win-crt-string-l1-1-0.dll                      
+api-ms-win-crt-time-l1-1-0.dll                        
+api-ms-win-crt-utility-l1-1-0.dll                     
+clrcompression.dll                                    
+clretwrc.dll                                          
+clrjit.dll                                            
+coreclr.dll                                           
+dbgshim.dll                                           
+hostpolicy.dll                                        
+Microsoft.CSharp.dll                                  4.0.4.0
+Microsoft.DiaSymReader.Native.amd64.dll               
+Microsoft.VisualBasic.dll                             10.0.4.0
+Microsoft.Win32.Primitives.dll                        4.1.1.0
+Microsoft.Win32.Registry.dll                          4.1.1.0
+mscordaccore.dll                                      
+mscordaccore_amd64_amd64_4.6.28207.03.dll             
+mscordbi.dll                                          
+mscorlib.dll                                          4.0.0.0
+mscorrc.debug.dll                                     
+mscorrc.dll                                           
+netstandard.dll                                       2.0.0.0
+sos.dll                                               
+SOS.NETCore.dll                                       1.0.0.0
+sos_amd64_amd64_4.6.28207.03.dll                      
+System.AppContext.dll                                 4.2.1.0
+System.Buffers.dll                                    4.0.3.0
+System.Collections.Concurrent.dll                     4.0.14.0
+System.Collections.dll                                4.1.1.0
+System.Collections.Immutable.dll                      1.2.3.0
+System.Collections.NonGeneric.dll                     4.1.1.0
+System.Collections.Specialized.dll                    4.1.1.0
+System.ComponentModel.Annotations.dll                 4.2.1.0
+System.ComponentModel.DataAnnotations.dll             4.0.0.0
+System.ComponentModel.dll                             4.0.3.0
+System.ComponentModel.EventBasedAsync.dll             4.1.1.0
+System.ComponentModel.Primitives.dll                  4.2.1.0
+System.ComponentModel.TypeConverter.dll               4.2.1.0
+System.Configuration.dll                              4.0.0.0
+System.Console.dll                                    4.1.1.0
+System.Core.dll                                       4.0.0.0
+System.Data.Common.dll                                4.2.1.0
+System.Data.dll                                       4.0.0.0
+System.Diagnostics.Contracts.dll                      4.0.3.0
+System.Diagnostics.Debug.dll                          4.1.1.0
+System.Diagnostics.DiagnosticSource.dll               4.0.3.1
+System.Diagnostics.FileVersionInfo.dll                4.0.3.0
+System.Diagnostics.Process.dll                        4.2.1.0
+System.Diagnostics.StackTrace.dll                     4.1.1.0
+System.Diagnostics.TextWriterTraceListener.dll        4.1.1.0
+System.Diagnostics.Tools.dll                          4.1.1.0
+System.Diagnostics.TraceSource.dll                    4.1.1.0
+System.Diagnostics.Tracing.dll                        4.2.1.0
+System.dll                                            4.0.0.0
+System.Drawing.dll                                    4.0.0.0
+System.Drawing.Primitives.dll                         4.2.0.0
+System.Dynamic.Runtime.dll                            4.1.1.0
+System.Globalization.Calendars.dll                    4.1.1.0
+System.Globalization.dll                              4.1.1.0
+System.Globalization.Extensions.dll                   4.1.1.0
+System.IO.Compression.Brotli.dll                      4.2.1.0
+System.IO.Compression.dll                             4.2.1.0
+System.IO.Compression.FileSystem.dll                  4.0.0.0
+System.IO.Compression.ZipFile.dll                     4.0.4.0
+System.IO.dll                                         4.2.1.0
+System.IO.FileSystem.AccessControl.dll                4.0.3.0
+System.IO.FileSystem.dll                              4.1.1.0
+System.IO.FileSystem.DriveInfo.dll                    4.1.1.0
+System.IO.FileSystem.Primitives.dll                   4.1.1.0
+System.IO.FileSystem.Watcher.dll                      4.1.1.0
+System.IO.IsolatedStorage.dll                         4.1.1.0
+System.IO.MemoryMappedFiles.dll                       4.1.1.0
+System.IO.Pipes.AccessControl.dll                     4.0.3.0
+System.IO.Pipes.dll                                   4.1.1.0
+System.IO.UnmanagedMemoryStream.dll                   4.1.1.0
+System.Linq.dll                                       4.2.1.0
+System.Linq.Expressions.dll                           4.2.1.0
+System.Linq.Parallel.dll                              4.0.3.0
+System.Linq.Queryable.dll                             4.0.3.0
+System.Memory.dll                                     4.1.0.0
+System.Net.dll                                        4.0.0.0
+System.Net.Http.dll                                   4.2.1.0
+System.Net.HttpListener.dll                           4.0.1.0
+System.Net.Mail.dll                                   4.0.1.0
+System.Net.NameResolution.dll                         4.1.1.0
+System.Net.NetworkInformation.dll                     4.2.1.0
+System.Net.Ping.dll                                   4.1.1.0
+System.Net.Primitives.dll                             4.1.1.0
+System.Net.Requests.dll                               4.1.1.0
+System.Net.Security.dll                               4.1.1.0
+System.Net.ServicePoint.dll                           4.0.1.0
+System.Net.Sockets.dll                                4.2.1.0
+System.Net.WebClient.dll                              4.0.1.0
+System.Net.WebHeaderCollection.dll                    4.1.1.0
+System.Net.WebProxy.dll                               4.0.1.0
+System.Net.WebSockets.Client.dll                      4.1.1.0
+System.Net.WebSockets.dll                             4.1.1.0
+System.Numerics.dll                                   4.0.0.0
+System.Numerics.Vectors.dll                           4.1.4.0
+System.ObjectModel.dll                                4.1.1.0
+System.Private.CoreLib.dll                            4.0.0.0
+System.Private.DataContractSerialization.dll          4.1.4.0
+System.Private.Uri.dll                                4.0.5.0
+System.Private.Xml.dll                                4.0.1.0
+System.Private.Xml.Linq.dll                           4.0.1.0
+System.Reflection.DispatchProxy.dll                   4.0.4.0
+System.Reflection.dll                                 4.2.1.0
+System.Reflection.Emit.dll                            4.1.1.0
+System.Reflection.Emit.ILGeneration.dll               4.0.3.0
+System.Reflection.Emit.Lightweight.dll                4.0.3.0
+System.Reflection.Extensions.dll                      4.1.1.0
+System.Reflection.Metadata.dll                        1.4.3.0
+System.Reflection.Primitives.dll                      4.1.1.0
+System.Reflection.TypeExtensions.dll                  4.1.3.0
+System.Resources.Reader.dll                           4.1.1.0
+System.Resources.ResourceManager.dll                  4.1.1.0
+System.Resources.Writer.dll                           4.1.1.0
+System.Runtime.CompilerServices.VisualC.dll           4.1.1.0
+System.Runtime.dll                                    4.2.1.0
+System.Runtime.Extensions.dll                         4.2.1.0
+System.Runtime.Handles.dll                            4.1.1.0
+System.Runtime.InteropServices.dll                    4.2.1.0
+System.Runtime.InteropServices.RuntimeInformation.dll 4.0.3.0
+System.Runtime.InteropServices.WindowsRuntime.dll     4.0.3.0
+System.Runtime.Loader.dll                             4.0.3.0
+System.Runtime.Numerics.dll                           4.1.1.0
+System.Runtime.Serialization.dll                      4.0.0.0
+System.Runtime.Serialization.Formatters.dll           4.0.3.0
+System.Runtime.Serialization.Json.dll                 4.0.4.0
+System.Runtime.Serialization.Primitives.dll           4.2.1.0
+System.Runtime.Serialization.Xml.dll                  4.1.4.0
+System.Security.AccessControl.dll                     4.1.1.0
+System.Security.Claims.dll                            4.1.1.0
+System.Security.Cryptography.Algorithms.dll           4.3.1.0
+System.Security.Cryptography.Cng.dll                  4.3.1.0
+System.Security.Cryptography.Csp.dll                  4.1.1.0
+System.Security.Cryptography.Encoding.dll             4.1.1.0
+System.Security.Cryptography.OpenSsl.dll              4.1.1.1
+System.Security.Cryptography.Primitives.dll           4.1.1.0
+System.Security.Cryptography.X509Certificates.dll     4.2.1.0
+System.Security.dll                                   4.0.0.0
+System.Security.Principal.dll                         4.1.1.0
+System.Security.Principal.Windows.dll                 4.1.1.1
+System.Security.SecureString.dll                      4.1.1.0
+System.ServiceModel.Web.dll                           4.0.0.0
+System.ServiceProcess.dll                             4.0.0.0
+System.Text.Encoding.dll                              4.1.1.0
+System.Text.Encoding.Extensions.dll                   4.1.1.0
+System.Text.RegularExpressions.dll                    4.2.1.0
+System.Threading.dll                                  4.1.1.0
+System.Threading.Overlapped.dll                       4.1.1.0
+System.Threading.Tasks.Dataflow.dll                   4.6.3.0
+System.Threading.Tasks.dll                            4.1.1.0
+System.Threading.Tasks.Extensions.dll                 4.3.0.0
+System.Threading.Tasks.Parallel.dll                   4.0.3.0
+System.Threading.Thread.dll                           4.1.1.0
+System.Threading.ThreadPool.dll                       4.1.1.0
+System.Threading.Timer.dll                            4.1.1.0
+System.Transactions.dll                               4.0.0.0
+System.Transactions.Local.dll                         4.0.1.0
+System.ValueTuple.dll                                 4.0.3.0
+System.Web.dll                                        4.0.0.0
+System.Web.HttpUtility.dll                            4.0.1.0
+System.Windows.dll                                    4.0.0.0
+System.Xml.dll                                        4.0.0.0
+System.Xml.Linq.dll                                   4.0.0.0
+System.Xml.ReaderWriter.dll                           4.2.1.0
+System.Xml.Serialization.dll                          4.0.0.0
+System.Xml.XDocument.dll                              4.1.1.0
+System.Xml.XmlDocument.dll                            4.1.1.0
+System.Xml.XmlSerializer.dll                          4.1.1.0
+System.Xml.XPath.dll                                  4.1.1.0
+System.Xml.XPath.XDocument.dll                        4.1.1.0
+ucrtbase.dll                                          
+WindowsBase.dll                                       4.0.0.0
