@@ -38,6 +38,8 @@ namespace PgopaBreakingChangeFunctionApp
             ILogger log)
         {
             log.LogInformation($"C# HTTP trigger function processed a request.{Process.GetCurrentProcess().Id}");
+            //DefaultHttpRequest defaultHttpRequest = new DefaultHttpRequest(new DefaultHttpContext());
+
             //FacebookOptions fbOptions = new FacebookOptions();
             //DatabaseErrorPageMiddleware databaseErrorPageMiddleware = new DatabaseErrorPageMiddleware(null, null, null);
             //databaseErrorPageMiddleware.IsArray();

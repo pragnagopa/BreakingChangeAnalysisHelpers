@@ -34,4 +34,6 @@
     </None>
   </ItemGroup>
 
+  <ProjectExtensions><VisualStudio><UserProperties runtimeassemblies_1json__JsonSchema="http://json.schemastore.org/apple-app-site-association" /></VisualStudio></ProjectExtensions>
+
 </Project>

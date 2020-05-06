@@ -12,6 +12,9 @@ using Newtonsoft.Json.Linq;
 using Microsoft.Data.OData;
 using Microsoft.Data.SqlClient;
 using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Http.Internal;
+using System.Collections.Generic;
+using Microsoft.Extensions.Primitives;
 
 namespace pgopaBreakingChangeAppV2
 {
@@ -22,7 +25,23 @@ namespace pgopaBreakingChangeAppV2
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req,
             ILogger log)
         {
-            log.LogInformation("C# HTTP trigger function processed a request.");
+
+            log.LogInformation($"C# HTTP trigger function processed a request.{Environment.SpecialFolder.ProgramFiles}");
+            DefaultHttpRequest defaultHttpRequest = new DefaultHttpRequest(new DefaultHttpContext());
+            log.LogInformation($"C# HTTP trigger function  accessing defaultHttpRequest method: {defaultHttpRequest.Method}");
+
+
+            var queryParamsDictionary = new Dictionary<string, StringValues>()
+            {
+                {"key1", "val1" },
+                { "key2", "val" }
+            };
+
+            QueryCollection qc = new QueryCollection(queryParamsDictionary);
+
+            log.LogInformation($"C# HTTP trigger function  accessing qc:{qc.Count}");
+
+
             log.LogInformation($"{GoogleDefaults.AuthenticationScheme}");
             IDataReader reader;
             JObject x = new JObject();
@@ -37,7 +56,7 @@ namespace pgopaBreakingChangeAppV2
 
             string responseMessage = string.IsNullOrEmpty(name)
                 ? "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response."
-                : $"Hello, {name}. This HTTP triggered function executed successfully.";
+                : $"Hello, {name}. C# HTTP trigger function  accessing defaultHttpRequest method and qc and special folder";
             //throw new Exception("test ex");
             log.LogError(new Exception("testex"), "failed");
             return new OkObjectResult(responseMessage);
