@@ -1,5 +1,6 @@
 let obosoleteMethods = dynamic(
 [
+"Removed - microsoft.extensions.logging.console - M:Microsoft.Extensions.Logging.Console.ConsoleLoggerProvider.#ctor(System.Func{System.String,Microsoft.Extensions.Logging.LogLevel,System.Boolean},System.Boolean)",
 "Removed - microsoft.extensions.logging.console - M:Microsoft.Extensions.Logging.Console.ConsoleLoggerProvider.#ctor(System.Func{System.String,Microsoft.Extensions.Logging.LogLevel,System.Boolean},System.Boolean,System.Boolean)",
 "Removed - microsoft.extensions.logging.console - M:Microsoft.Extensions.Logging.ConsoleLoggerExtensions.AddConsole(Microsoft.Extensions.Logging.ILoggerFactory)", 
 "Removed - microsoft.extensions.logging.console - M:Microsoft.Extensions.Logging.ConsoleLoggerExtensions.AddConsole(Microsoft.Extensions.Logging.ILoggerFactory,Microsoft.Extensions.Configuration.IConfiguration)", 
@@ -33,6 +34,8 @@ let errorsFromInterfaceChanges = dynamic(
 let safeErrorsToIgnore = dynamic(
 [
 "Removed - microsoft.extensions.configuration - M:Microsoft.Extensions.Configuration.ConfigurationSection.#ctor(Microsoft.Extensions.Configuration.ConfigurationRoot,System.String)"
+"Removed - microsoft.aspnetcore.mvc.formatters.json - M:Microsoft.AspNetCore.Mvc.JsonResult.set_SerializerSettings(Newtonsoft.Json.JsonSerializerSettings)"
+"Removed - microsoft.aspnetcore.mvc.formatters.json - M:Microsoft.AspNetCore.Mvc.JsonResult.#ctor(System.Object,Newtonsoft.Json.JsonSerializerSettings)"
 ]
 );
 let knownAssembliesWithUdpatedVersion = dynamic (
@@ -209,7 +212,7 @@ allLogs
 allLogs
 | where methodRemoved !in (typesRemoved)
 | where typeRemoved !in (typesRemoved)
-| summarize count() by apiString//, assemblyNameString//, tostring(d_AssemblyVersion), tostring(d_TargetFrameworkMoniker)
+| summarize count() by apiString//, assemblyNameString, tostring(d_AssemblyVersion), tostring(d_TargetFrameworkMoniker)
 //| summarize count() by AppName, assemblyNameString, apiString
 //|distinct AppName 
 //| project apiString, reference, typeRemoved, methodRemoved  
