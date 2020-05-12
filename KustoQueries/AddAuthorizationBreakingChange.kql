@@ -141,6 +141,7 @@ All("FunctionsLogs")
 | where assemblyNameString !in (knownAssembliesWithUdpatedVersion)
 | extend apiString = tostring(parsedApis)
 | where apiString !=""
+| where apiString == "Removed - microsoft.aspnetcore.authorization - M:Microsoft.Extensions.DependencyInjection.AuthorizationServiceCollectionExtensions.AddAuthorization(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{Microsoft.AspNetCore.Authorization.AuthorizationOptions})"
 | extend idx = indexof(apiString,":")
 | extend reference = substring(apiString, 0, idx)
 | extend reference = replace(" - T","",reference)
@@ -169,7 +170,7 @@ allLogs
 allLogs
 | where methodRemoved !in (typesRemoved)
 | where typeRemoved !in (typesRemoved)
-//| summarize count() by AppName, assemblyNameString, tostring(d_AssemblyVersion), apiString
-//| summarize count() by AppName, assemblyNameString, apiString
-|distinct AppName 
+//| summarize count() by AppName, assemblyNameString, tostring(d_AssemblyVersion)//, apiString
+| summarize count() by  assemblyNameString//, apiString
+//|distinct AppName 
 //| project apiString, reference, typeRemoved, methodRemoved  
