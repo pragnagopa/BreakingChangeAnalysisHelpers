@@ -33,8 +33,8 @@ let errorsFromInterfaceChanges = dynamic(
 );
 let safeErrorsToIgnore = dynamic(
 [
-"Removed - microsoft.extensions.configuration - M:Microsoft.Extensions.Configuration.ConfigurationSection.#ctor(Microsoft.Extensions.Configuration.ConfigurationRoot,System.String)"
-"Removed - microsoft.aspnetcore.mvc.formatters.json - M:Microsoft.AspNetCore.Mvc.JsonResult.set_SerializerSettings(Newtonsoft.Json.JsonSerializerSettings)"
+"Removed - microsoft.extensions.configuration - M:Microsoft.Extensions.Configuration.ConfigurationSection.#ctor(Microsoft.Extensions.Configuration.ConfigurationRoot,System.String)",
+"Removed - microsoft.aspnetcore.mvc.formatters.json - M:Microsoft.AspNetCore.Mvc.JsonResult.set_SerializerSettings(Newtonsoft.Json.JsonSerializerSettings)",
 "Removed - microsoft.aspnetcore.mvc.formatters.json - M:Microsoft.AspNetCore.Mvc.JsonResult.#ctor(System.Object,Newtonsoft.Json.JsonSerializerSettings)"
 ]
 );
@@ -212,7 +212,7 @@ allLogs
 allLogs
 | where methodRemoved !in (typesRemoved)
 | where typeRemoved !in (typesRemoved)
-| summarize count() by apiString//, assemblyNameString, tostring(d_AssemblyVersion), tostring(d_TargetFrameworkMoniker)
+//| summarize count() by apiString//, assemblyNameString, tostring(d_AssemblyVersion), tostring(d_TargetFrameworkMoniker)
 //| summarize count() by AppName, assemblyNameString, apiString
-//|distinct AppName 
+|distinct AppName 
 //| project apiString, reference, typeRemoved, methodRemoved  
