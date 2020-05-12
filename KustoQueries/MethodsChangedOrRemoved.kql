@@ -38,6 +38,11 @@ let safeErrorsToIgnore = dynamic(
 "Removed - microsoft.aspnetcore.mvc.formatters.json - M:Microsoft.AspNetCore.Mvc.JsonResult.#ctor(System.Object,Newtonsoft.Json.JsonSerializerSettings)"
 ]
 );
+let userActionNeededErrors = dynamic(
+[
+"Removed - microsoft.aspnetcore.authorization - M:Microsoft.Extensions.DependencyInjection.AuthorizationServiceCollectionExtensions.AddAuthorization(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{Microsoft.AspNetCore.Authorization.AuthorizationOptions})"
+]
+);
 let knownAssembliesWithUdpatedVersion = dynamic (
 [
 "Microsoft.AspNetCore.TestHost",
@@ -184,6 +189,7 @@ All("FunctionsLogs")
 | where apiString !in  (safeErrorsToIgnore)
 | where apiString !in (errorsFromInterfaceChanges)
 | where apiString !in (obosoleteMethods)
+| where apiString !in (userActionNeededErrors)
 | extend idx = indexof(apiString,":")
 | extend reference = substring(apiString, 0, idx)
 | extend reference = replace(" - T","",reference)
