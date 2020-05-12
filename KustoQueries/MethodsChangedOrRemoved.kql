@@ -1,3 +1,40 @@
+let obosoleteMethods = dynamic(
+[
+"Removed - microsoft.extensions.logging.console - M:Microsoft.Extensions.Logging.Console.ConsoleLoggerProvider.#ctor(System.Func{System.String,Microsoft.Extensions.Logging.LogLevel,System.Boolean},System.Boolean,System.Boolean)",
+"Removed - microsoft.extensions.logging.console - M:Microsoft.Extensions.Logging.ConsoleLoggerExtensions.AddConsole(Microsoft.Extensions.Logging.ILoggerFactory)", 
+"Removed - microsoft.extensions.logging.console - M:Microsoft.Extensions.Logging.ConsoleLoggerExtensions.AddConsole(Microsoft.Extensions.Logging.ILoggerFactory,Microsoft.Extensions.Configuration.IConfiguration)", 
+"Removed - microsoft.extensions.logging.console - M:Microsoft.Extensions.Logging.ConsoleLoggerExtensions.AddConsole(Microsoft.Extensions.Logging.ILoggerFactory,Microsoft.Extensions.Logging.LogLevel)", 
+"Removed - microsoft.extensions.logging.console - M:Microsoft.Extensions.Logging.ConsoleLoggerExtensions.AddConsole(Microsoft.Extensions.Logging.ILoggerFactory,System.Boolean)", 
+"Removed - microsoft.extensions.logging.debug - M:Microsoft.Extensions.Logging.Debug.DebugLoggerProvider.#ctor(System.Func{System.String,Microsoft.Extensions.Logging.LogLevel,System.Boolean})",
+"Removed - microsoft.extensions.logging.debug - M:Microsoft.Extensions.Logging.DebugLoggerFactoryExtensions.AddDebug(Microsoft.Extensions.Logging.ILoggerFactory)", 
+"Removed - microsoft.extensions.logging.debug - M:Microsoft.Extensions.Logging.DebugLoggerFactoryExtensions.AddDebug(Microsoft.Extensions.Logging.ILoggerFactory,Microsoft.Extensions.Logging.LogLevel)", 
+"Removed - microsoft.extensions.logging.debug - M:Microsoft.Extensions.Logging.DebugLoggerFactoryExtensions.AddDebug(Microsoft.Extensions.Logging.ILoggerFactory,System.Func{System.String,Microsoft.Extensions.Logging.LogLevel,System.Boolean})",
+"Removed - microsoft.extensions.logging.eventsource - M:Microsoft.Extensions.Logging.EventSourceLoggerFactoryExtensions.AddEventSourceLogger(Microsoft.Extensions.Logging.ILoggerFactory)", 
+"Removed - microsoft.extensions.logging.tracesource - M:Microsoft.Extensions.Logging.TraceSourceFactoryExtensions.AddTraceSource(Microsoft.Extensions.Logging.ILoggerFactory,System.Diagnostics.SourceSwitch)", 
+"Removed - microsoft.extensions.logging.tracesource - M:Microsoft.Extensions.Logging.TraceSourceFactoryExtensions.AddTraceSource(Microsoft.Extensions.Logging.ILoggerFactory,System.Diagnostics.SourceSwitch,System.Diagnostics.TraceListener)", 
+"Removed - microsoft.extensions.logging.tracesource - M:Microsoft.Extensions.Logging.TraceSourceFactoryExtensions.AddTraceSource(Microsoft.Extensions.Logging.ILoggerFactory,System.String)"
+]
+);
+let errorsFromInterfaceChanges = dynamic(
+[
+"AddMemberToInterface - microsoft.extensions.identity.core - T:Microsoft.AspNetCore.Identity.ILookupNormalizer",
+"AddMemberToInterface - microsoft.extensions.hosting.abstractions - T:Microsoft.Extensions.Hosting.IHostBuilder",
+"MadeAbstractOrSealedWithAccessibleConstructors - microsoft.aspnetcore.http - T:Microsoft.AspNetCore.Http.DefaultHttpContext",
+"AddMemberToInterface - microsoft.aspnetcore.authorization - T:Microsoft.AspNetCore.Authorization.IAuthorizationPolicyProvider",
+"AddMemberToInterface - microsoft.aspnetcore.routing - T:Microsoft.AspNetCore.Routing.Matching.IEndpointSelectorPolicy",
+"AddMemberToInterface - microsoft.aspnetcore.signalr.common - T:Microsoft.AspNetCore.SignalR.IInvocationBinder",
+"RemovedInterfaceImpl - microsoft.aspnetcore.mvc.core - T:Microsoft.AspNetCore.Mvc.ApiControllerAttribute",
+"RemovedInterfaceImpl - microsoft.aspnetcore.mvc.core - T:Microsoft.AspNetCore.Mvc.ApplicationParts.AssemblyPart",
+"RemovedInterfaceImpl - microsoft.aspnetcore.mvc.core - T:Microsoft.AspNetCore.Mvc.ConsumesAttribute",
+"RemovedInterfaceImpl - microsoft.aspnetcore.mvc.viewfeatures - T:Microsoft.AspNetCore.Mvc.RemoteAttribute",
+"RemovedInterfaceImpl - microsoft.aspnetcore.server.kestrel.core - T:Microsoft.AspNetCore.Server.Kestrel.Core.ListenOptions"
+]
+);
+let safeErrorsToIgnore = dynamic(
+[
+"Removed - microsoft.extensions.configuration - M:Microsoft.Extensions.Configuration.ConfigurationSection.#ctor(Microsoft.Extensions.Configuration.ConfigurationRoot,System.String)"
+]
+);
 let knownAssembliesWithUdpatedVersion = dynamic (
 [
 "Microsoft.AspNetCore.TestHost",
@@ -7,6 +44,8 @@ let knownAssembliesWithUdpatedVersion = dynamic (
 "Swashbuckle.AspNetCore.SwaggerGen",
 "PF.Common.Hosting", // 130 apps // look at the app content 
 "PF.Common.Utilities",
+"PF.Configuration.Client",
+"Serilog.Extensions.Hosting",
 "Microsoft.Azure.SignalR"// look at target framework...net standard 2.0 
 ]
 );
@@ -139,6 +178,9 @@ All("FunctionsLogs")
 | where assemblyNameString !in (knownAssembliesWithUdpatedVersion)
 | extend apiString = tostring(parsedApis)
 | where apiString !=""
+| where apiString !in  (safeErrorsToIgnore)
+| where apiString !in (errorsFromInterfaceChanges)
+| where apiString !in (obosoleteMethods)
 | extend idx = indexof(apiString,":")
 | extend reference = substring(apiString, 0, idx)
 | extend reference = replace(" - T","",reference)
@@ -167,6 +209,7 @@ allLogs
 allLogs
 | where methodRemoved !in (typesRemoved)
 | where typeRemoved !in (typesRemoved)
-| summarize count() by apiString, assemblyNameString//, tostring(d_AssemblyVersion), tostring(d_TargetFrameworkMoniker)
+| summarize count() by apiString//, assemblyNameString//, tostring(d_AssemblyVersion), tostring(d_TargetFrameworkMoniker)
+//| summarize count() by AppName, assemblyNameString, apiString
 //|distinct AppName 
-//| project apiString, reference, typeRemoved, methodRemoved 
+//| project apiString, reference, typeRemoved, methodRemoved  
