@@ -40,7 +40,8 @@ let safeErrorsToIgnore = dynamic(
 );
 let userActionNeededErrors = dynamic(
 [
-"Removed - microsoft.aspnetcore.authorization - M:Microsoft.Extensions.DependencyInjection.AuthorizationServiceCollectionExtensions.AddAuthorization(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{Microsoft.AspNetCore.Authorization.AuthorizationOptions})"
+"Removed - microsoft.aspnetcore.authorization - M:Microsoft.Extensions.DependencyInjection.AuthorizationServiceCollectionExtensions.AddAuthorization(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{Microsoft.AspNetCore.Authorization.AuthorizationOptions})",
+"Removed - microsoft.aspnetcore.mvc.razorpages - M:Microsoft.AspNetCore.Mvc.RazorPages.RazorPagesOptions.set_AllowAreas(System.Boolean)"
 ]
 );
 let knownAssembliesWithUdpatedVersion = dynamic (
