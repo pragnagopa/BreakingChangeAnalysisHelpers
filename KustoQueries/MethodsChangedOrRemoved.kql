@@ -13,14 +13,16 @@ let obosoleteMethods = dynamic(
 "Removed - microsoft.extensions.logging.eventsource - M:Microsoft.Extensions.Logging.EventSourceLoggerFactoryExtensions.AddEventSourceLogger(Microsoft.Extensions.Logging.ILoggerFactory)", 
 "Removed - microsoft.extensions.logging.tracesource - M:Microsoft.Extensions.Logging.TraceSourceFactoryExtensions.AddTraceSource(Microsoft.Extensions.Logging.ILoggerFactory,System.Diagnostics.SourceSwitch)", 
 "Removed - microsoft.extensions.logging.tracesource - M:Microsoft.Extensions.Logging.TraceSourceFactoryExtensions.AddTraceSource(Microsoft.Extensions.Logging.ILoggerFactory,System.Diagnostics.SourceSwitch,System.Diagnostics.TraceListener)", 
-"Removed - microsoft.extensions.logging.tracesource - M:Microsoft.Extensions.Logging.TraceSourceFactoryExtensions.AddTraceSource(Microsoft.Extensions.Logging.ILoggerFactory,System.String)"
+"Removed - microsoft.extensions.logging.tracesource - M:Microsoft.Extensions.Logging.TraceSourceFactoryExtensions.AddTraceSource(Microsoft.Extensions.Logging.ILoggerFactory,System.String)",
+"Removed - microsoft.aspnetcore.mvc.core - M:Microsoft.AspNetCore.Mvc.ModelBinding.Binders.FormFileModelBinder.#ctor",
+"Removed - microsoft.aspnetcore.mvc.core - M:Microsoft.AspNetCore.Mvc.ModelBinding.Binders.SimpleTypeModelBinder.#ctor(System.Type)",
+"Removed - microsoft.aspnetcore.mvc.core - M:Microsoft.AspNetCore.Mvc.RedirectResult.ExecuteResult(Microsoft.AspNetCore.Mvc.ActionContext)"
 ]
 );
 let errorsFromInterfaceChanges = dynamic(
 [
 "AddMemberToInterface - microsoft.extensions.identity.core - T:Microsoft.AspNetCore.Identity.ILookupNormalizer",
 "AddMemberToInterface - microsoft.extensions.hosting.abstractions - T:Microsoft.Extensions.Hosting.IHostBuilder",
-"MadeAbstractOrSealedWithAccessibleConstructors - microsoft.aspnetcore.http - T:Microsoft.AspNetCore.Http.DefaultHttpContext",
 "AddMemberToInterface - microsoft.aspnetcore.authorization - T:Microsoft.AspNetCore.Authorization.IAuthorizationPolicyProvider",
 "AddMemberToInterface - microsoft.aspnetcore.routing - T:Microsoft.AspNetCore.Routing.Matching.IEndpointSelectorPolicy",
 "AddMemberToInterface - microsoft.aspnetcore.signalr.common - T:Microsoft.AspNetCore.SignalR.IInvocationBinder",
@@ -31,17 +33,31 @@ let errorsFromInterfaceChanges = dynamic(
 "RemovedInterfaceImpl - microsoft.aspnetcore.server.kestrel.core - T:Microsoft.AspNetCore.Server.Kestrel.Core.ListenOptions"
 ]
 );
+let errorsFromInheritance = dynamic(
+[
+"MadeAbstractOrSealedWithAccessibleConstructors - microsoft.aspnetcore.http - T:Microsoft.AspNetCore.Http.DefaultHttpContext",
+"ChangeInMethodVirtualness - microsoft.aspnetcore.http - M:Microsoft.AspNetCore.Http.DefaultHttpContext.Initialize(Microsoft.AspNetCore.Http.Features.IFeatureCollection)",
+"MadeAbstractOrSealedWithAccessibleConstructors - microsoft.aspnetcore.razor.runtime - T:Microsoft.AspNetCore.Razor.TagHelpers.RestrictChildrenAttribute",
+"MadeAbstractOrSealedWithAccessibleConstructors - microsoft.extensions.identity.core - T:Microsoft.AspNetCore.Identity.UpperInvariantLookupNormalizer",
+"NewAbstractMembersWithAccessibleConstructors - microsoft.aspnetcore.mvc.core - T:Microsoft.AspNetCore.Mvc.ModelBinding.ObjectModelValidator"
+]
+);
 let safeErrorsToIgnore = dynamic(
 [
 "Removed - microsoft.extensions.configuration - M:Microsoft.Extensions.Configuration.ConfigurationSection.#ctor(Microsoft.Extensions.Configuration.ConfigurationRoot,System.String)",
 "Removed - microsoft.aspnetcore.mvc.formatters.json - M:Microsoft.AspNetCore.Mvc.JsonResult.set_SerializerSettings(Newtonsoft.Json.JsonSerializerSettings)",
-"Removed - microsoft.aspnetcore.mvc.formatters.json - M:Microsoft.AspNetCore.Mvc.JsonResult.#ctor(System.Object,Newtonsoft.Json.JsonSerializerSettings)"
+"Removed - microsoft.aspnetcore.mvc.formatters.json - M:Microsoft.AspNetCore.Mvc.JsonResult.#ctor(System.Object,Newtonsoft.Json.JsonSerializerSettings)",
+"ChangedBaseClass - microsoft.aspnetcore.mvc.viewfeatures - T:Microsoft.AspNetCore.Mvc.RemoteAttribute"
 ]
 );
 let userActionNeededErrors = dynamic(
 [
+"Removed - microsoft.aspnetcore.http.abstractions - M:Microsoft.AspNetCore.Http.HttpContext.get_Authentication",
+"Removed - microsoft.aspnetcore.authorization - M:Microsoft.Extensions.DependencyInjection.AuthorizationServiceCollectionExtensions.AddAuthorization(Microsoft.Extensions.DependencyInjection.IServiceCollection)",
 "Removed - microsoft.aspnetcore.authorization - M:Microsoft.Extensions.DependencyInjection.AuthorizationServiceCollectionExtensions.AddAuthorization(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{Microsoft.AspNetCore.Authorization.AuthorizationOptions})",
-"Removed - microsoft.aspnetcore.mvc.razorpages - M:Microsoft.AspNetCore.Mvc.RazorPages.RazorPagesOptions.set_AllowAreas(System.Boolean)"
+"Removed - microsoft.aspnetcore.mvc.razorpages - M:Microsoft.AspNetCore.Mvc.RazorPages.RazorPagesOptions.set_AllowAreas(System.Boolean)",
+"Removed - microsoft.aspnetcore.mvc.core - M:Microsoft.AspNetCore.Mvc.ModelBinding.Validation.ValidationVisitor.#ctor(Microsoft.AspNetCore.Mvc.ActionContext,Microsoft.AspNetCore.Mvc.ModelBinding.Validation.IModelValidatorProvider,Microsoft.AspNetCore.Mvc.Internal.ValidatorCache,Microsoft.AspNetCore.Mvc.ModelBinding.IModelMetadataProvider,Microsoft.AspNetCore.Mvc.ModelBinding.Validation.ValidationStateDictionary)",
+"Removed - microsoft.aspnetcore.mvc.viewfeatures - M:Microsoft.AspNetCore.Mvc.ViewFeatures.HtmlHelper`1.#ctor(Microsoft.AspNetCore.Mvc.ViewFeatures.IHtmlGenerator,Microsoft.AspNetCore.Mvc.ViewEngines.ICompositeViewEngine,Microsoft.AspNetCore.Mvc.ModelBinding.IModelMetadataProvider,Microsoft.AspNetCore.Mvc.ViewFeatures.Internal.IViewBufferScope,System.Text.Encodings.Web.HtmlEncoder,System.Text.Encodings.Web.UrlEncoder,Microsoft.AspNetCore.Mvc.ViewFeatures.Internal.ExpressionTextCache)"
 ]
 );
 let knownAssembliesWithUdpatedVersion = dynamic (
@@ -191,6 +207,7 @@ All("FunctionsLogs")
 | where apiString !in (errorsFromInterfaceChanges)
 | where apiString !in (obosoleteMethods)
 | where apiString !in (userActionNeededErrors)
+| where apiString !in (errorsFromInheritance)
 | extend idx = indexof(apiString,":")
 | extend reference = substring(apiString, 0, idx)
 | extend reference = replace(" - T","",reference)
