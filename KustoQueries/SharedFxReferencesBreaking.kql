@@ -139,4 +139,4 @@ All("FunctionsLogs")
 | summarize count() by AppName
 //| summarize count() by tostring(d_AssemblyName)
 //| summarize count() by apiString
-  
+   

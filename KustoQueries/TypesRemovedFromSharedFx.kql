@@ -6,8 +6,10 @@ let knownAssembliesWithUdpatedVersion = dynamic (
 "Swashbuckle.AspNetCore.Swagger",
 "Swashbuckle.AspNetCore.SwaggerGen",
 "PF.Common.Hosting", // 130 apps // look at the app content 
-"PF.Common.Utilities"//,
-//"Microsoft.Azure.SignalR"// look at target framework...net standard 2.0 
+"PF.Common.Utilities",
+"PF.Configuration.Client",
+"Serilog.Extensions.Hosting",
+"Microsoft.Azure.SignalR"// look at target framework...net standard 2.0 
 ]
 );
 let referencesNotRemoved = dynamic (
@@ -161,3 +163,6 @@ allLogs
 | where apiString contains "Removed - "
 | where apiString contains "T:"
 | summarize count() by typeRemoved
+
+
+ 
