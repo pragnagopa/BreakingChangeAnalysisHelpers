@@ -16,7 +16,8 @@ let obosoleteMethods = dynamic(
 "Removed - microsoft.extensions.logging.tracesource - M:Microsoft.Extensions.Logging.TraceSourceFactoryExtensions.AddTraceSource(Microsoft.Extensions.Logging.ILoggerFactory,System.String)",
 "Removed - microsoft.aspnetcore.mvc.core - M:Microsoft.AspNetCore.Mvc.ModelBinding.Binders.FormFileModelBinder.#ctor",
 "Removed - microsoft.aspnetcore.mvc.core - M:Microsoft.AspNetCore.Mvc.ModelBinding.Binders.SimpleTypeModelBinder.#ctor(System.Type)",
-"Removed - microsoft.aspnetcore.mvc.core - M:Microsoft.AspNetCore.Mvc.RedirectResult.ExecuteResult(Microsoft.AspNetCore.Mvc.ActionContext)"
+"Removed - microsoft.aspnetcore.mvc.core - M:Microsoft.AspNetCore.Mvc.RedirectResult.ExecuteResult(Microsoft.AspNetCore.Mvc.ActionContext)",
+"Removed - microsoft.aspnetcore.routing - M:Microsoft.AspNetCore.Routing.Template.TemplateBinder.#ctor(System.Text.Encodings.Web.UrlEncoder,Microsoft.Extensions.ObjectPool.ObjectPool{Microsoft.AspNetCore.Routing.Internal.UriBuildingContext},Microsoft.AspNetCore.Routing.Template.RouteTemplate,Microsoft.AspNetCore.Routing.RouteValueDictionary)"
 ]
 );
 let errorsFromInterfaceChanges = dynamic(
@@ -52,6 +53,13 @@ let safeErrorsToIgnore = dynamic(
 );
 let userActionNeededErrors = dynamic(
 [
+"Removed - microsoft.aspnetcore.signalr.protocols.json - M:Microsoft.AspNetCore.SignalR.JsonHubProtocolOptions.get_PayloadSerializerSettings",
+"Removed - microsoft.aspnetcore.staticfiles - M:Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware.#ctor(Microsoft.AspNetCore.Http.RequestDelegate,Microsoft.AspNetCore.Hosting.IHostingEnvironment,Microsoft.Extensions.Options.IOptions{Microsoft.AspNetCore.Builder.StaticFileOptions},Microsoft.Extensions.Logging.ILoggerFactory)",
+"Removed - microsoft.extensions.caching.memory - M:Microsoft.Extensions.Caching.Memory.MemoryCacheOptions.set_CompactOnMemoryPressure(System.Boolean)",
+"Removed - microsoft.aspnetcore.mvc.viewfeatures - M:Microsoft.AspNetCore.Mvc.Rendering.IJsonHelper.Serialize(System.Object,Newtonsoft.Json.JsonSerializerSettings)",
+"Removed - microsoft.extensions.identity.core - M:Microsoft.AspNetCore.Identity.UserManager`1.NormalizeKey(System.String)",
+"Removed - microsoft.extensions.identity.core - M:Microsoft.AspNetCore.Identity.UpperInvariantLookupNormalizer.Normalize(System.String)",
+"Removed - microsoft.aspnetcore.server.kestrel.core - M:Microsoft.AspNetCore.Server.Kestrel.Core.ListenOptions.set_NoDelay(System.Boolean)",
 "Removed - microsoft.aspnetcore.http.abstractions - M:Microsoft.AspNetCore.Http.HttpContext.get_Authentication",
 "Removed - microsoft.aspnetcore.authorization - M:Microsoft.Extensions.DependencyInjection.AuthorizationServiceCollectionExtensions.AddAuthorization(Microsoft.Extensions.DependencyInjection.IServiceCollection)",
 "Removed - microsoft.aspnetcore.authorization - M:Microsoft.Extensions.DependencyInjection.AuthorizationServiceCollectionExtensions.AddAuthorization(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{Microsoft.AspNetCore.Authorization.AuthorizationOptions})",
