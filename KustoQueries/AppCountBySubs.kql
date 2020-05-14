@@ -195,13 +195,13 @@ let errorsFromTypesRemoved = (
 allLogs
 | where apiString contains "Removed - "
 | where apiString contains "T:"
-| distinct  SubscriptionId, AppName
+| summarize by SubscriptionId, AppName
 );
 errorsFromTypesRemoved 
 | union 
 allLogs
 | where methodRemoved !in (typesRemoved)
 | where typeRemoved !in (typesRemoved)
-//| distinct AppName, assemblyNameString, apiString
-| distinct SubscriptionId, AppName
-| summarize count() by SubscriptionId
+| summarize by SubscriptionId, AppName
+| summarize  count() by   SubscriptionId
+ 
