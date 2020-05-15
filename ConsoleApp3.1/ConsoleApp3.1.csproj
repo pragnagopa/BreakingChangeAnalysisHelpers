@@ -20,6 +20,9 @@
     <None Update="v2Refs.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="RemovedAssembliesAfterCleanedRuntimeJsonV3.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="v2SharedFrameworkRefs.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

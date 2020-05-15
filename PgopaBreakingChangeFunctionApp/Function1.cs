@@ -27,6 +27,12 @@ using Microsoft.AspNetCore.SpaServices;
 using Microsoft.IdentityModel.Protocols.WsFederation;
 using Microsoft.IdentityModel.Tokens.Saml;
 using Microsoft.IdentityModel.Xml;
+using Microsoft.Extensions.Configuration;
+using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.AspNetCore.Hosting;
 
 namespace PgopaBreakingChangeFunctionApp
 {
@@ -38,7 +44,23 @@ namespace PgopaBreakingChangeFunctionApp
             ILogger log)
         {
             log.LogInformation($"C# HTTP trigger function processed a request.{Process.GetCurrentProcess().Id}");
-            //DefaultHttpRequest defaultHttpRequest = new DefaultHttpRequest(new DefaultHttpContext());
+
+            //ConfigurationRoot configurationRoot = new ConfigurationRoot(null);
+            //ConfigurationSection configurationSection = new ConfigurationSection(configurationRoot, "");
+
+            //JsonSerializerSettings serializerSettings = new JsonSerializerSettings();
+            //JsonResult jr = new JsonResult("", serializerSettings);
+            //jr.SerializerSettings = serializerSettings;
+
+            RemoteAttribute remoteAttribute = new RemoteAttribute("sdfsdf");
+            var castRemoteAttribute = remoteAttribute as ValidationAttribute;
+            var castRemoteAttribute2 = remoteAttribute as IClientModelValidator;
+            ClientModelValidationContext context = null;
+            castRemoteAttribute2.AddValidation(context);
+            IHostingEnvironment he = null;
+            StaticFileMiddleware sf = new StaticFileMiddleware(null, he, null, null);
+
+            DefaultHttpRequest defaultHttpRequest = new DefaultHttpRequest(new DefaultHttpContext());
 
             //FacebookOptions fbOptions = new FacebookOptions();
             //DatabaseErrorPageMiddleware databaseErrorPageMiddleware = new DatabaseErrorPageMiddleware(null, null, null);
@@ -51,7 +73,7 @@ namespace PgopaBreakingChangeFunctionApp
             //NodeServicesOptions nodeServicesOptions = new NodeServicesOptions(null);
             //FeatureMap featureMap = new OwinEnvironment.FeatureMap(null, null);
 
-            var buffer = Microsoft.AspNetCore.Server.Kestrel.Transport.Abstractions.Internal.KestrelMemoryPool.Create();
+            //var buffer = Microsoft.AspNetCore.Server.Kestrel.Transport.Abstractions.Internal.KestrelMemoryPool.Create();
             //log.LogInformation($"{ListenType.FileHandle}");
             //SpaOptions spaOptions = new SpaOptions();
             //log.LogInformation($"{spaOptions.DefaultPage}");

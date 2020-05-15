@@ -15,6 +15,13 @@ using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Http.Internal;
 using System.Collections.Generic;
 using Microsoft.Extensions.Primitives;
+using Microsoft.AspNetCore.Mvc.Internal;
+using Microsoft.Extensions.Configuration;
+using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.AspNetCore.Hosting;
 
 namespace pgopaBreakingChangeAppV2
 {
@@ -25,23 +32,30 @@ namespace pgopaBreakingChangeAppV2
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req,
             ILogger log)
         {
-
+            //ConfigurationRoot configurationRoot = new ConfigurationRoot(null);
+            //ConfigurationSection configurationSection = new ConfigurationSection(configurationRoot, "");
+            //JsonSerializerSettings serializerSettings = new JsonSerializerSettings();
+            //JsonResult jr = new JsonResult("", serializerSettings);
+            //jr.SerializerSettings = serializerSettings;
             log.LogInformation($"C# HTTP trigger function processed a request.{Environment.SpecialFolder.ProgramFiles}");
             DefaultHttpRequest defaultHttpRequest = new DefaultHttpRequest(new DefaultHttpContext());
             log.LogInformation($"C# HTTP trigger function  accessing defaultHttpRequest method: {defaultHttpRequest.Method}");
 
-
+            RemoteAttribute remoteAttribute = new RemoteAttribute("sdfsdf");
+            var castRemoteAttribute = remoteAttribute as ValidationAttribute;
+            var castRemoteAttribute2 = remoteAttribute as IClientModelValidator;
             var queryParamsDictionary = new Dictionary<string, StringValues>()
             {
                 {"key1", "val1" },
                 { "key2", "val" }
             };
-
+            IHostingEnvironment he = null;
+            StaticFileMiddleware sf = new StaticFileMiddleware(null, he, null, null);
             QueryCollection qc = new QueryCollection(queryParamsDictionary);
 
             log.LogInformation($"C# HTTP trigger function  accessing qc:{qc.Count}");
 
-
+            //HtmlHelper hh = new HtmlHelper
             log.LogInformation($"{GoogleDefaults.AuthenticationScheme}");
             IDataReader reader;
             JObject x = new JObject();

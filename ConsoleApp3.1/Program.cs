@@ -11,14 +11,10 @@ namespace ConsoleApp3._1
         static void Main(string[] args)
         {
             string path = @"runtimeassemblies.json";
-            string matchMinorOrLowerAssembliesPath = @"matchMinorOrLowerAssemblies.txt";
-            string runtimeVersionAssembliesPath = @"runtimeVersionAssemblies.txt";
-            string removedAssembliesFromSharedFrameworkPath = @"removedAssembliesFromSharedFramework.txt";
+            string breakingChangesRefsInRemainingMissingFilesFile = @"breakingChangesRefsInRemainingMissingFiles.txt";
             string removedFilesPath = @"removedFiles.txt";
-            string errorsFromNotRemovedFilesPath = @"errorsFromNotRemovedFiles.txt";
-            string directReferencesFilesPath = @"directReferencesFilesPath.txt";
-            string noDirectRemovedReferencesFilesPathV2 = @"noDirectRemovedReferencesFilesPathV2.txt";
-
+            string nonRemovedFilesPath = @"nonRemovedFiles.txt";
+            string missingFilesRefsInV3CleanUpFile = "missingFilesRefsInV3CleanUpFile.txt";
 
             // Get-ChildItem -Filter *.dll | Select-Object Name,@{n='AssemblyVersion';e={[Reflection.AssemblyName]::GetAssemblyName($_.FullName).Version}} | Format-Table -AutoSize > v3SharedFrameworkRefs.txt
             // Get-ChildItem -Filter Microsoft.Azure.SignalR | Select-Object Name,@{n='AssemblyVersion';e={[Reflection.AssemblyName]::GetAssemblyName($_.FullName).Version}} | Format-Table -AutoSize 
@@ -28,11 +24,8 @@ namespace ConsoleApp3._1
             string sharedFrameworkNetCore228AssembliesPath = @"v228NetCoreRefs.txt";
             string v3SiteExtensionAssembliesPath = @"v3Refs.txt";
             string v2SiteExtensionAssembliesPath = @"v2Refs.txt";
-            string breakingChangesInRemovedReferencesFilesPath = "breakingChangesInRemovedReferencesFiles.txt";
             string breakingChangesInNonRemovedReferencesFilesPath = "breakingChangesInNonRemovedReferencesFiles.txt";
-            string removedReferencesFromSharedFxNoReferencesInV3FilePath = "removedReferencesFromSharedFxNoReferencesInV3FilePath.txt";
 
-            // This text is added only once to the file.
             string assembliesJson = File.ReadAllText(path);
             JObject assemblies = JObject.Parse(assembliesJson);
 
@@ -40,114 +33,82 @@ namespace ConsoleApp3._1
                 .ToObject<RuntimeAssembly[]>()
                 .ToDictionary(a => a.Name, StringComparer.OrdinalIgnoreCase);
 
-            var matchMinorOrLowerAssemblies = runtimeAssemblies.Where(r => r.Value.ResolutionPolicy.Equals("minorMatchOrLower"));
-            string matchMinorOrLowerassembliesString = string.Join($"{Environment.NewLine}", matchMinorOrLowerAssemblies.Select(r => $"\"{r.Value.Name.ToLower()}\","));
-            File.WriteAllText(matchMinorOrLowerAssembliesPath, $"[{matchMinorOrLowerassembliesString}]");
-
-            var runtimeVersionAssemblies = runtimeAssemblies.Where(r => r.Value.ResolutionPolicy.Equals("runtimeVersion"));
-            string runtimeVersionAssembliesString = string.Join($"{Environment.NewLine}", runtimeVersionAssemblies.Select(r => $"\"{r.Value.Name.ToLower()}\","));
-            File.WriteAllText(runtimeVersionAssembliesPath, $"[{runtimeVersionAssembliesString}]");
+            Dictionary<string, RuntimeAssembly> v3RuntimeReferences = GetAssemblyDictionary(v3SiteExtensionAssembliesPath);
+            Dictionary<string, RuntimeAssembly> v2RuntimeReferences = GetAssemblyDictionary(v2SiteExtensionAssembliesPath);
+            Dictionary<string, RuntimeAssembly> v228SharedFrameworkAspNetReferences = GetAssemblyDictionary(sharedFrameworkAspNet228AssembliesPath);
+            Dictionary<string, RuntimeAssembly> v313SharedFrameworkAspNetReferences = GetAssemblyDictionary(sharedFrameworkAspNet313AssembliesPath);
+            Dictionary<string, RuntimeAssembly> v228SharedFrameworkNetCoreReferences = GetAssemblyDictionary(sharedFrameworkNetCore228AssembliesPath);
+            Dictionary<string, RuntimeAssembly> v313SharedFrameworkNetCoreReferences = GetAssemblyDictionary(sharedFrameworkNetCore313AssembliesPath);
 
             // Removed assemblies from shared framework: https://github.com/dotnet/aspnetcore/issues/3755
             // Find assemblies in C:\Program Files\dotnet\shared\Microsoft.AspNetCore.App\2.2.8 not in C:\Program Files\dotnet\shared\Microsoft.AspNetCore.App\3.1.3
             // Find assemblies in C:\Program Files\dotnet\shared\Microsoft.NETCore.App\2.2.8 not in C:\Program Files\dotnet\shared\Microsoft.NETCore.App\3.1.3
-            string sharedFramework2Path = @"C:\Program Files\dotnet\shared\Microsoft.AspNetCore.App\2.2.8";
-            string sharedFramework3path = @"C:\Program Files\dotnet\shared\Microsoft.AspNetCore.App\3.1.3";
-            string dotnetCore228AppPath = @"C:\Program Files\dotnet\shared\Microsoft.NETCore.App\2.2.8";
-            string dotnetCore313AppPath = @"C:\Program Files\dotnet\shared\Microsoft.NETCore.App\3.1.3";
-            var sharedFramework2PathFiles = Directory.GetFiles(sharedFramework2Path, "*.dll").Select(p => Path.GetFileName(p));
-            var sharedFramework3PathFiles = Directory.GetFiles(sharedFramework3path, "*.dll").Select(p => Path.GetFileName(p));
-            var dotnetCore228AppFiles = Directory.GetFiles(dotnetCore228AppPath, "*.dll").Select(p => Path.GetFileNameWithoutExtension(p).ToLower());
-            var dotnetCore313AppFiles = Directory.GetFiles(dotnetCore313AppPath, "*.dll").Select(p => Path.GetFileNameWithoutExtension(p).ToLower());
+            var missingFilesAspNet = v228SharedFrameworkAspNetReferences.Where(f => !v313SharedFrameworkAspNetReferences.Keys.Contains(f.Key) && runtimeAssemblies.Keys.Contains(f.Key)).ToDictionary(m => m.Key, m => m.Value);
+            var missingFilesNetCore = v228SharedFrameworkNetCoreReferences.Where(f => !v313SharedFrameworkNetCoreReferences.Keys.Contains(f.Key) && runtimeAssemblies.Keys.Contains(f.Key)).ToDictionary(m => m.Key, m => m.Value);
+            var uniqueMissingFiles = GetUnionDict(v313SharedFrameworkAspNetReferences, v313SharedFrameworkNetCoreReferences, missingFilesAspNet, missingFilesNetCore);
 
-            var missingFilesAspNet = sharedFramework2PathFiles.Where(f => !sharedFramework3PathFiles.Contains(Path.GetFileName(f))).Select(v => v.ToLower());
-            var missingFilesNetCore = dotnetCore228AppFiles.Where(f => !dotnetCore313AppFiles.Contains(Path.GetFileName(f))).Select(v => v.ToLower());
+            string missingFilesString = string.Join($"{Environment.NewLine}", uniqueMissingFiles.Select(r => $"\"{r.Value.Name.ToLower()}\","));
+            File.WriteAllText(removedFilesPath, $"[{missingFilesString}]");
 
-            var missingFiles = missingFilesAspNet.Union(missingFilesNetCore);
-            string missingFilesString = string.Join($"{Environment.NewLine}", missingFiles.Select(r => $"\"{r.ToLower()}\","));
-            File.WriteAllText(removedAssembliesFromSharedFrameworkPath, $"[{missingFilesString}]");
-
-            // Assemblies in unified list that are removed. These errors can be ignored from kusto if there is a direct reference in runtime
-            // Get the list for assemblies in runtimeAssemblies.json that are removed from shared framework
-            // Exclude assemblies from C:\Program Files\dotnet\shared\Microsoft.NETCore.App\2.2.8
-            var runtimeAssembliesUnifiedRemoved = runtimeAssemblies.Where(r => missingFilesString.Contains(r.Value.Name.ToLower(), StringComparison.OrdinalIgnoreCase));
-            runtimeAssembliesUnifiedRemoved = runtimeAssembliesUnifiedRemoved.Where(r => !dotnetCore228AppFiles.Contains(r.Value.Name.ToLower()));
-
-            string removedFiles = string.Join($"{Environment.NewLine}", runtimeAssembliesUnifiedRemoved.Select(r => $"\"{r.Value.Name.ToLower()}\","));
-            File.WriteAllText(removedFilesPath, $"[{removedFiles}]");
-
-            // Extract assemblies we care errors about as these assemblies could have breaking changes betwee 2.2 and 3.1
-            var runtimeAssembliesUnifiedNotRemoved = runtimeAssemblies.Where(r => !removedFiles.Contains(r.Value.Name.ToLower(), StringComparison.OrdinalIgnoreCase));
-            string errorsFromNotRemovedFiles = string.Join($"{Environment.NewLine}", runtimeAssembliesUnifiedNotRemoved.Select(r => $"\"{r.Value.Name.ToLower()}\","));
-            File.WriteAllText(errorsFromNotRemovedFilesPath, $"[{errorsFromNotRemovedFiles}]");
-
-
-            //List assemblies with direct reference in runtime that are listed in run assemblies json
-            string runtimeDirectReferencesSiteExtensionPath = @"C:\Users\pgopa\Downloads\2.0.12961\32bit";
-            var runtimeDirectReferencesSiteExtensionFiles = Directory.GetFiles(runtimeDirectReferencesSiteExtensionPath, "*.dll").Select(p => Path.GetFileNameWithoutExtension(p).ToLower());
-
-            var runtimeReferencesInAssemblyJson = runtimeAssemblies.Where(r => runtimeDirectReferencesSiteExtensionFiles.Contains(r.Value.Name.ToLower()));
-            string runtimeReferencesInAssemblyJsonString = string.Join($"{Environment.NewLine}", runtimeReferencesInAssemblyJson.Select(r => $"\"{r.Value.Name.ToLower()}\","));
-            File.WriteAllText(directReferencesFilesPath, $"[{runtimeReferencesInAssemblyJsonString}]");
-
-
-            //List assemblies removed and not direct reference in runtime that are listed in run assemblies json
-            var runtimeRemovedReferencesInAssemblyJson = runtimeAssembliesUnifiedRemoved.Where(r => !runtimeDirectReferencesSiteExtensionFiles.Contains(r.Value.Name.ToLower()));
-            string runtimeRemovedReferencesInAssemblyJsonString = string.Join($"{Environment.NewLine}", runtimeRemovedReferencesInAssemblyJson.Select(r => $"\"{r.Value.Name.ToLower()}\","));
-            File.WriteAllText(noDirectRemovedReferencesFilesPathV2, $"[{runtimeRemovedReferencesInAssemblyJsonString}]");
-
-
-            Dictionary<string, RuntimeAssembly> v3RuntimeReferences = GetAssemblyDictionary(v3SiteExtensionAssembliesPath);
-            Dictionary<string, RuntimeAssembly> v2RuntimeReferences = GetAssemblyDictionary(v2SiteExtensionAssembliesPath);
-            Dictionary<string, RuntimeAssembly> v2SharedFrameworkReferences = GetAssemblyDictionary(sharedFrameworkAspNet228AssembliesPath);
-            Dictionary<string, RuntimeAssembly> v3SharedFrameworkReferences = GetAssemblyDictionary(sharedFrameworkAspNet313AssembliesPath);
-            Dictionary<string, RuntimeAssembly> v228SharedFrameworkNetCoreReferences = GetAssemblyDictionary(sharedFrameworkNetCore228AssembliesPath);
-            Dictionary<string, RuntimeAssembly> v313SharedFrameworkNetCoreReferences = GetAssemblyDictionary(sharedFrameworkNetCore313AssembliesPath);
-
-            // References available in V3 that are removed from shared framework 2.2.8
-            var v3AddedRuntimeReferencesNotInShared313 = v3RuntimeReferences.Where(r => runtimeRemovedReferencesInAssemblyJsonString.Contains(r.Key, StringComparison.OrdinalIgnoreCase)).ToDictionary( g => g.Key, g => g.Value);
-
-
-            // references listed in unification list, removed from shared fx 3.1.3 and references not added in V3 runtime
-            var removedReferencesFromSharedFxNoReferencesInV3 = runtimeAssembliesUnifiedRemoved.Where(r => !v3RuntimeReferences.Keys.Contains(r.Key)  && !v3SharedFrameworkReferences.Keys.Contains(r.Key) && !v313SharedFrameworkNetCoreReferences.Keys.Contains(r.Key));
-            string removedReferencesFromSharedFxNoReferencesInV3String = string.Join($"{Environment.NewLine}", removedReferencesFromSharedFxNoReferencesInV3.Select(r => $"\"{r.Value.Name.ToLower()}\","));
-            File.WriteAllText(removedReferencesFromSharedFxNoReferencesInV3FilePath, $"[{removedReferencesFromSharedFxNoReferencesInV3String}]");
-
-
-            // find references that differ in major version between aspnet core app 2.2.8 and v3
-            var mismatchedMajorVersions = v3AddedRuntimeReferencesNotInShared313.Where(r =>
+            // If a missing file is not found any where, clean up runtimeAssemblies.Json
+            var missingFilesRefsInV3CleanUp = uniqueMissingFiles.Where(r =>
             {
-                if (v2SharedFrameworkReferences.TryGetValue(r.Key, out RuntimeAssembly outValue))
+                if (v3RuntimeReferences.Keys.Contains(r.Key) || v313SharedFrameworkAspNetReferences.Keys.Contains(r.Key) || v313SharedFrameworkNetCoreReferences.Keys.Contains(r.Key))
+                {
+                    return false;
+                }
+                return true;
+            }).ToDictionary(g => g.Key, g => g.Value);
+
+            string missingFilesRefsInV3String = string.Join($"{Environment.NewLine}", missingFilesRefsInV3CleanUp.Select(r => $"\"{r.Value.Name.ToLower()}\","));
+            File.WriteAllText(missingFilesRefsInV3CleanUpFile, $"[{missingFilesRefsInV3String}]");
+
+            var remainingMissingFiles = uniqueMissingFiles.Where(r => !missingFilesRefsInV3CleanUp.Keys.Contains(r.Key));
+            var breakingChangesRefsInRemainingMissingFiles = remainingMissingFiles.Where(r =>
+            {
+                if (v3RuntimeReferences.TryGetValue(r.Key, out RuntimeAssembly outValue))
                 {
                     return r.Value.MajorVersion != outValue.MajorVersion;
                 }
-                return false;
-            });
-
-            // Likely breaking changes if shown in logs. Need to look at each api.
-            var breakingChangesInRemovedReferences = runtimeRemovedReferencesInAssemblyJson.Where(r =>
-            {
-                if (v2SharedFrameworkReferences.TryGetValue(r.Key, out RuntimeAssembly outValue1) && v3AddedRuntimeReferencesNotInShared313.TryGetValue(r.Key, out RuntimeAssembly outValue2))
+                if (v313SharedFrameworkAspNetReferences.TryGetValue(r.Key, out RuntimeAssembly outValue2))
                 {
-                    if (outValue2.MajorVersion == outValue1.MajorVersion) return false;
+                    return r.Value.MajorVersion != outValue2.MajorVersion;
+                }
+                if (v313SharedFrameworkNetCoreReferences.TryGetValue(r.Key, out RuntimeAssembly outValue3))
+                {
+                    return r.Value.MajorVersion != outValue3.MajorVersion;
                 }
                 return true;
             });
 
-            string breakingChangesInRemovedReferencesString = string.Join($"{Environment.NewLine}", breakingChangesInRemovedReferences.Select(r => $"\"{r.Value.Name.ToLower()}\","));
-            File.WriteAllText(breakingChangesInRemovedReferencesFilesPath, $"[{breakingChangesInRemovedReferencesString}]");
+            string breakingChangesRefsInRemainingMissingFilesString = string.Join($"{Environment.NewLine}", breakingChangesRefsInRemainingMissingFiles.Select(r => $"\"{r.Value.Name.ToLower()}\","));
+            File.WriteAllText(breakingChangesRefsInRemainingMissingFilesFile, $"[{breakingChangesRefsInRemainingMissingFilesString}]");
+
+
+
+            /// Handle non missing files:
+            // Removed assemblies from shared framework: https://github.com/dotnet/aspnetcore/issues/3755
+            // Find assemblies in C:\Program Files\dotnet\shared\Microsoft.AspNetCore.App\2.2.8 not in C:\Program Files\dotnet\shared\Microsoft.AspNetCore.App\3.1.3
+            // Find assemblies in C:\Program Files\dotnet\shared\Microsoft.NETCore.App\2.2.8 not in C:\Program Files\dotnet\shared\Microsoft.NETCore.App\3.1.3
+            var nonRemovedFilesAspNet = v228SharedFrameworkAspNetReferences.Where(f => v313SharedFrameworkAspNetReferences.Keys.Contains(f.Key) && runtimeAssemblies.Keys.Contains(f.Key)).ToDictionary(m => m.Key, m => m.Value);
+            var nonRemovedFilesNetCore = v228SharedFrameworkNetCoreReferences.Where(f => v313SharedFrameworkNetCoreReferences.Keys.Contains(f.Key) && runtimeAssemblies.Keys.Contains(f.Key)).ToDictionary(m => m.Key, m => m.Value);
+
+            IEnumerable<KeyValuePair<string, RuntimeAssembly>> uniqueNonRemovedFiles = GetUnionDict(v313SharedFrameworkAspNetReferences, v313SharedFrameworkNetCoreReferences, nonRemovedFilesAspNet, nonRemovedFilesNetCore);
+
+            string nonRemovedFilesString = string.Join($"{Environment.NewLine}", uniqueNonRemovedFiles.Select(r => $"\"{r.Value.Name.ToLower()}\","));
+            File.WriteAllText(nonRemovedFilesPath, $"[{nonRemovedFilesString}]");
 
             // Likely breaking changes if shown in logs. Need to look at each api.
-            var breakingChangesInNonRemovedReferences = runtimeAssembliesUnifiedNotRemoved.Where(r =>
+            var breakingChangesInNonRemovedReferences = uniqueNonRemovedFiles.Where(r =>
             {
-                if (v2SharedFrameworkReferences.TryGetValue(r.Key, out RuntimeAssembly outValue1) && v3SharedFrameworkReferences.TryGetValue(r.Key, out RuntimeAssembly outValue2))
+                if (v228SharedFrameworkAspNetReferences.TryGetValue(r.Key, out RuntimeAssembly outValue1) && v313SharedFrameworkAspNetReferences.TryGetValue(r.Key, out RuntimeAssembly outValue2))
                 {
                     if (outValue2.MajorVersion == outValue1.MajorVersion)
                     {
                         return false;
                     }
                 }
-                if (v2SharedFrameworkReferences.TryGetValue(r.Key, out RuntimeAssembly shoutValue1) && v3RuntimeReferences.TryGetValue(r.Key, out RuntimeAssembly addedoutValue2))
+                if (v228SharedFrameworkAspNetReferences.TryGetValue(r.Key, out RuntimeAssembly shoutValue1) && v3RuntimeReferences.TryGetValue(r.Key, out RuntimeAssembly addedoutValue2))
                 {
                     if (addedoutValue2.MajorVersion == shoutValue1.MajorVersion)
                     {
@@ -173,7 +134,32 @@ namespace ConsoleApp3._1
 
             string breakingChangesInNonRemovedReferencesString = string.Join($"{Environment.NewLine}", breakingChangesInNonRemovedReferences.Select(r => $"\"{r.Value.Name.ToLower()}\","));
             File.WriteAllText(breakingChangesInNonRemovedReferencesFilesPath, $"[{breakingChangesInNonRemovedReferencesString}]");
+        }
 
+        private static IEnumerable<KeyValuePair<string, RuntimeAssembly>> GetUnionDict(Dictionary<string, RuntimeAssembly> v313SharedFrameworkAspNetReferences, Dictionary<string, RuntimeAssembly> v313SharedFrameworkNetCoreReferences, Dictionary<string, RuntimeAssembly> inputDict1, Dictionary<string, RuntimeAssembly> inputDict2)
+        {
+            var unioinFiles = new Dictionary<string, RuntimeAssembly>();
+            foreach (var inputFile in inputDict1)
+            {
+                unioinFiles[inputFile.Key] = inputFile.Value;
+            }
+            foreach (var inputFile in inputDict2)
+            {
+                unioinFiles[inputFile.Key] = inputFile.Value;
+            }
+            var uniqueFiles = unioinFiles.Where(r =>
+            {
+                if (v313SharedFrameworkAspNetReferences.TryGetValue(r.Key, out RuntimeAssembly outValue2))
+                {
+                    return r.Value.MajorVersion != outValue2.MajorVersion;
+                }
+                if (v313SharedFrameworkNetCoreReferences.TryGetValue(r.Key, out RuntimeAssembly outValue3))
+                {
+                    return r.Value.MajorVersion != outValue3.MajorVersion;
+                }
+                return true;
+            });
+            return uniqueFiles;
         }
 
         private static Dictionary<string, RuntimeAssembly> GetAssemblyDictionary(string fileName)
