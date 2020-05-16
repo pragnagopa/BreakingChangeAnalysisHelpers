@@ -120,20 +120,20 @@ let referencesNotRemoved = dynamic (
 "microsoft.net.http.headers"
 ]
 );
+let allLogs = (
 All("FunctionsLogs")
-//FunctionsLogs
 | where TIMESTAMP > ago(5d)
-| where Source contains "ChangeAnalysisService"
+| where Source == "Microsoft.Azure.WebJobs.Script.ChangeAnalysis.ChangeAnalysisService"
 | where Level == 5
-| where HostVersion startswith "2" 
+| where HostVersion startswith "2.0" 
 | extend d = parse_json(Summary)
 | extend parsedApis = parse_json(d.ProblematicApis)
 | project AppName, HostVersion, d.BinHash, d.AssemblyName , d.AssemblyVersion, d.AssemblyCulture, d.TargetFrameworkMoniker, d.Architecture, d.CorFlags, d.ImageVersion, d.HasCircularMetadata, d.HasNotSupportedMetadata, d.HasInvalidTokens, d.ProblematicApis, parsedApis
-| where d_ProblematicApis != "[]"
 | where d_ProblematicApis != ""
-//| take 50
 | mv-expand parsedApis
+| extend assemblyNameString = tostring(d_AssemblyName)
 | extend apiString = tostring(parsedApis)
+| where apiString !=""
 | extend idx = indexof(apiString,":")
 | extend reference = substring(apiString, 0, idx)
 | extend reference = replace(" - T","",reference)
@@ -141,10 +141,39 @@ All("FunctionsLogs")
 | extend idxErrorType = indexof(reference,"-")
 | extend errorType = substring(reference, 0, idxErrorType)
 | extend reference = substring(reference, idxErrorType + 2, strlen(reference))
-| where reference in (referencesNotRemoved) or reference in (referencesRemovedButDifferentVersionInV3)
-//| summarize count() by  reference
-//| summarize count() by  tostring(d_AssemblyName),tostring(d_AssemblyVersion), apiString 
-| summarize count() by AppName
-//| summarize count() by tostring(d_AssemblyName)
-//| summarize count() by apiString
+| where reference in (referencesNotRemoved) or reference in (referencesRemovedButDifferentVersionInV3) 
+| extend methodRemoved = substring(apiString, idx -1, strlen(apiString))
+| extend idxBracket = indexof(methodRemoved, "(")
+| extend idxBracket=iff(idxBracket == -1, strlen(methodRemoved) , idxBracket)
+| extend methodRemoved = substring(methodRemoved, 0, idxBracket)
+| extend lastIndexOfDot = strlen(methodRemoved) - indexof(reverse(methodRemoved), reverse(".")) - strlen(".")
+| extend methodRemoved = substring(methodRemoved, 0, lastIndexOfDot)
+| extend methodRemoved = replace("M:","", methodRemoved)
+| extend typeRemoved = substring(apiString, idx +1, strlen(apiString))
+| extend typeRemoved = replace("T:","", typeRemoved)
+);
+// Get the list of types removed
+let typesRemoved = (
+allLogs
+| where apiString contains "Removed - "
+| where apiString contains "T:"
+| summarize by typeRemoved
+);
+// Get the list of apps using types removed
+let appsWithTypesRemoved = (
+allLogs
+| where apiString contains "Removed - "
+| where apiString contains "T:"
+| distinct AppName
+);
+appsWithTypesRemoved
+| union 
+allLogs
+| where methodRemoved !in (typesRemoved)
+| where typeRemoved !in (typesRemoved)
+//| summarize count() by apiString//, assemblyNameString, tostring(d_AssemblyVersion), tostring(d_TargetFrameworkMoniker)
+//| summarize count() by AppName, assemblyNameString, apiString
+|distinct AppName 
+
+//| project apiString, reference, typeRemoved, methodRemoved  
    

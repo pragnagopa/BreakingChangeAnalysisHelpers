@@ -12,6 +12,62 @@ let knownAssembliesWithUdpatedVersion = dynamic (
 "Microsoft.Azure.SignalR"// look at target framework...net standard 2.0 
 ]
 );
+let errorsFromInterfaceChanges = dynamic(
+[
+"AddMemberToInterface - microsoft.extensions.identity.core - T:Microsoft.AspNetCore.Identity.ILookupNormalizer",
+"AddMemberToInterface - microsoft.extensions.hosting.abstractions - T:Microsoft.Extensions.Hosting.IHostBuilder",
+"AddMemberToInterface - microsoft.aspnetcore.authorization - T:Microsoft.AspNetCore.Authorization.IAuthorizationPolicyProvider",
+"AddMemberToInterface - microsoft.aspnetcore.routing - T:Microsoft.AspNetCore.Routing.Matching.IEndpointSelectorPolicy",
+"AddMemberToInterface - microsoft.aspnetcore.signalr.common - T:Microsoft.AspNetCore.SignalR.IInvocationBinder",
+"RemovedInterfaceImpl - microsoft.aspnetcore.mvc.core - T:Microsoft.AspNetCore.Mvc.ApiControllerAttribute",
+"RemovedInterfaceImpl - microsoft.aspnetcore.mvc.core - T:Microsoft.AspNetCore.Mvc.ApplicationParts.AssemblyPart",
+"RemovedInterfaceImpl - microsoft.aspnetcore.mvc.core - T:Microsoft.AspNetCore.Mvc.ConsumesAttribute",
+"RemovedInterfaceImpl - microsoft.aspnetcore.mvc.viewfeatures - T:Microsoft.AspNetCore.Mvc.RemoteAttribute",
+"RemovedInterfaceImpl - microsoft.aspnetcore.server.kestrel.core - T:Microsoft.AspNetCore.Server.Kestrel.Core.ListenOptions"
+]
+);
+let errorsFromInheritance = dynamic(
+[
+"MadeAbstractOrSealedWithAccessibleConstructors - microsoft.aspnetcore.http - T:Microsoft.AspNetCore.Http.DefaultHttpContext",
+"ChangeInMethodVirtualness - microsoft.aspnetcore.http - M:Microsoft.AspNetCore.Http.DefaultHttpContext.Initialize(Microsoft.AspNetCore.Http.Features.IFeatureCollection)",
+"MadeAbstractOrSealedWithAccessibleConstructors - microsoft.aspnetcore.razor.runtime - T:Microsoft.AspNetCore.Razor.TagHelpers.RestrictChildrenAttribute",
+"MadeAbstractOrSealedWithAccessibleConstructors - microsoft.extensions.identity.core - T:Microsoft.AspNetCore.Identity.UpperInvariantLookupNormalizer",
+"NewAbstractMembersWithAccessibleConstructors - microsoft.aspnetcore.mvc.core - T:Microsoft.AspNetCore.Mvc.ModelBinding.ObjectModelValidator"
+]
+);
+let safeErrorsToIgnore = dynamic(
+[
+"Removed - microsoft.extensions.configuration - M:Microsoft.Extensions.Configuration.ConfigurationSection.#ctor(Microsoft.Extensions.Configuration.ConfigurationRoot,System.String)",
+"Removed - microsoft.aspnetcore.mvc.formatters.json - M:Microsoft.AspNetCore.Mvc.JsonResult.set_SerializerSettings(Newtonsoft.Json.JsonSerializerSettings)",
+"Removed - microsoft.aspnetcore.mvc.formatters.json - M:Microsoft.AspNetCore.Mvc.JsonResult.#ctor(System.Object,Newtonsoft.Json.JsonSerializerSettings)",
+"ChangedBaseClass - microsoft.aspnetcore.mvc.viewfeatures - T:Microsoft.AspNetCore.Mvc.RemoteAttribute"
+]
+);
+let referencesRemovedNoDirectReferences = dynamic (
+[
+"microsoft.aspnetcore.authentication.facebook",
+"microsoft.aspnetcore.authentication.google",
+"microsoft.aspnetcore.authentication.microsoftaccount",
+"microsoft.aspnetcore.authentication.openidconnect",
+"microsoft.aspnetcore.authentication.twitter",
+"microsoft.aspnetcore.authentication.wsfederation",
+"microsoft.aspnetcore.diagnostics.entityframeworkcore",
+"microsoft.aspnetcore.identity.ui",
+"microsoft.aspnetcore.middlewareanalysis",
+"microsoft.aspnetcore.nodeservices",
+"microsoft.aspnetcore.owin",
+"microsoft.aspnetcore.server.kestrel.https",
+"microsoft.aspnetcore.server.kestrel.transport.abstractions",
+"microsoft.aspnetcore.spaservices",
+"microsoft.aspnetcore.spaservices.extensions",
+"microsoft.extensions.caching.sqlserver",
+"microsoft.identitymodel.protocols.wsfederation",
+"microsoft.identitymodel.tokens.saml",
+"microsoft.identitymodel.xml",
+"system.net.websockets.websocketprotocol",
+"sos.netcore"
+]
+);
 let referencesRemovedButDifferentVersionInV3 = dynamic (
 [
 "microsoft.aspnetcore.authentication.jwtbearer",
@@ -142,14 +198,16 @@ All("FunctionsLogs")
 | where HostVersion startswith "2.0" 
 | extend d = parse_json(Summary)
 | extend parsedApis = parse_json(d.ProblematicApis)
-| project AppName, HostVersion, d.BinHash, d.AssemblyName , d.AssemblyVersion, d.AssemblyCulture, d.TargetFrameworkMoniker, d.Architecture, d.CorFlags, d.ImageVersion, d.HasCircularMetadata, d.HasNotSupportedMetadata, d.HasInvalidTokens, d.ProblematicApis, parsedApis
+| project SubscriptionId, AppName, HostVersion, d.BinHash, d.AssemblyName , d.AssemblyVersion, d.AssemblyCulture, d.TargetFrameworkMoniker, d.Architecture, d.CorFlags, d.ImageVersion, d.HasCircularMetadata, d.HasNotSupportedMetadata, d.HasInvalidTokens, d.ProblematicApis, parsedApis
 | where d_ProblematicApis != ""
 | mv-expand parsedApis
 | extend assemblyNameString = tostring(d_AssemblyName)
 | where assemblyNameString !in (knownAssembliesWithUdpatedVersion)
 | extend apiString = tostring(parsedApis)
 | where apiString !=""
-| where apiString in ("Removed - microsoft.extensions.logging.console - M:Microsoft.Extensions.Logging.Console.ConsoleLoggerProvider.#ctor(System.Func{System.String,Microsoft.Extensions.Logging.LogLevel,System.Boolean},System.Boolean,System.Boolean)", "Removed - microsoft.extensions.logging.console - M:Microsoft.Extensions.Logging.ConsoleLoggerExtensions.AddConsole(Microsoft.Extensions.Logging.ILoggerFactory)", "Removed - microsoft.extensions.logging.console - M:Microsoft.Extensions.Logging.ConsoleLoggerExtensions.AddConsole(Microsoft.Extensions.Logging.ILoggerFactory,Microsoft.Extensions.Configuration.IConfiguration)", "Removed - microsoft.extensions.logging.console - M:Microsoft.Extensions.Logging.ConsoleLoggerExtensions.AddConsole(Microsoft.Extensions.Logging.ILoggerFactory,Microsoft.Extensions.Logging.LogLevel)", "Removed - microsoft.extensions.logging.console - M:Microsoft.Extensions.Logging.ConsoleLoggerExtensions.AddConsole(Microsoft.Extensions.Logging.ILoggerFactory,System.Boolean)", "Removed - microsoft.extensions.logging.debug - M:Microsoft.Extensions.Logging.Debug.DebugLoggerProvider.#ctor(System.Func{System.String,Microsoft.Extensions.Logging.LogLevel,System.Boolean})", "Removed - microsoft.extensions.logging.debug - M:Microsoft.Extensions.Logging.DebugLoggerFactoryExtensions.AddDebug(Microsoft.Extensions.Logging.ILoggerFactory)", "Removed - microsoft.extensions.logging.debug - M:Microsoft.Extensions.Logging.DebugLoggerFactoryExtensions.AddDebug(Microsoft.Extensions.Logging.ILoggerFactory,Microsoft.Extensions.Logging.LogLevel)", "Removed - microsoft.extensions.logging.debug - M:Microsoft.Extensions.Logging.DebugLoggerFactoryExtensions.AddDebug(Microsoft.Extensions.Logging.ILoggerFactory,System.Func{System.String,Microsoft.Extensions.Logging.LogLevel,System.Boolean})", "Removed - microsoft.extensions.logging.eventsource - M:Microsoft.Extensions.Logging.EventSourceLoggerFactoryExtensions.AddEventSourceLogger(Microsoft.Extensions.Logging.ILoggerFactory)", "Removed - microsoft.extensions.logging.tracesource - M:Microsoft.Extensions.Logging.TraceSourceFactoryExtensions.AddTraceSource(Microsoft.Extensions.Logging.ILoggerFactory,System.Diagnostics.SourceSwitch)", "Removed - microsoft.extensions.logging.tracesource - M:Microsoft.Extensions.Logging.TraceSourceFactoryExtensions.AddTraceSource(Microsoft.Extensions.Logging.ILoggerFactory,System.Diagnostics.SourceSwitch,System.Diagnostics.TraceListener)", "Removed - microsoft.extensions.logging.tracesource - M:Microsoft.Extensions.Logging.TraceSourceFactoryExtensions.AddTraceSource(Microsoft.Extensions.Logging.ILoggerFactory,System.String)")
+| where apiString !in (safeErrorsToIgnore)
+| where apiString !in (errorsFromInterfaceChanges)
+| where apiString !in (errorsFromInheritance)
 | extend idx = indexof(apiString,":")
 | extend reference = substring(apiString, 0, idx)
 | extend reference = replace(" - T","",reference)
@@ -157,7 +215,7 @@ All("FunctionsLogs")
 | extend idxErrorType = indexof(reference,"-")
 | extend errorType = substring(reference, 0, idxErrorType)
 | extend reference = substring(reference, idxErrorType + 2, strlen(reference))
-| where reference in (referencesNotRemoved) or reference in (referencesRemovedButDifferentVersionInV3)
+| where reference in (referencesNotRemoved) or reference in (referencesRemovedButDifferentVersionInV3) or reference in (referencesRemovedNoDirectReferences)
 | extend methodRemoved = substring(apiString, idx -1, strlen(apiString))
 | extend idxBracket = indexof(methodRemoved, "(")
 | extend idxBracket=iff(idxBracket == -1, strlen(methodRemoved) , idxBracket)
@@ -175,11 +233,25 @@ allLogs
 | where apiString contains "T:"
 | summarize by typeRemoved
 );
+// Get the list of apps using types removed
+let appsWithTypesRemoved = (
+allLogs
+| where apiString contains "Removed - "
+| where apiString contains "T:"
+| summarize count() by SubscriptionId, AppName, assemblyNameString, apiString
+//| distinct AppName
+);
+appsWithTypesRemoved
+| union 
 allLogs
 | where methodRemoved !in (typesRemoved)
 | where typeRemoved !in (typesRemoved)
-//| summarize count() by apiString
-//, assemblyNameString//, tostring(d_AssemblyVersion), tostring(d_TargetFrameworkMoniker)
-//| summarize count() by AppName, assemblyNameString, tostring(d_AssemblyVersion), apiString
-|distinct AppName 
+//| summarize count() by apiString//, assemblyNameString, tostring(d_AssemblyVersion), tostring(d_TargetFrameworkMoniker)
+| summarize count() by SubscriptionId, AppName, assemblyNameString, apiString
+| distinct AppName
+
+| summarize count() by apiString
+
+
 //| project apiString, reference, typeRemoved, methodRemoved  
+   
