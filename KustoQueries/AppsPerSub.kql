@@ -24,6 +24,15 @@ let referencesRemovedReferencesFromSharedFx3_1 = dynamic (
 "sos.netcore"
 ]
 );
+let referencesRemovedButDifferentVersionInV3 = dynamic (
+[
+"microsoft.aspnetcore.authentication.jwtbearer",
+"microsoft.aspnetcore.jsonpatch",
+"microsoft.codeanalysis"
+//"microsoft.extensions.diagnosticadapter",
+//"newtonsoft.json"
+]
+);
 let referencesNotRemoved = dynamic (
 [
 "microsoft.aspnetcore.antiforgery",
@@ -160,7 +169,7 @@ All("FunctionsLogs")
 | extend idxErrorType = indexof(reference,"-")
 | extend errorType = substring(reference, 0, idxErrorType)
 | extend reference = substring(reference, idxErrorType + 2, strlen(reference))
-| where reference in (referencesNotRemoved) or reference in (referencesRemovedReferencesFromSharedFx3_1)
+| where reference in (referencesNotRemoved) or reference in (referencesRemovedReferencesFromSharedFx3_1) or reference in (referencesRemovedButDifferentVersionInV3)
 | where reference != "newtonsoft.json" // figure out why not in v2 site extension
 | extend methodRemoved = substring(apiString, idx -1, strlen(apiString))
 | extend idxBracket = indexof(methodRemoved, "(")

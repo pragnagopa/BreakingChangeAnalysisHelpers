@@ -10,6 +10,15 @@ let knownAssembliesWithUdpatedVersion = dynamic (
 "Microsoft.Azure.SignalR"
 ]
 );
+let referencesRemovedButDifferentVersionInV3 = dynamic (
+[
+"microsoft.aspnetcore.authentication.jwtbearer",
+"microsoft.aspnetcore.jsonpatch",
+"microsoft.codeanalysis"
+//"microsoft.extensions.diagnosticadapter",
+//"newtonsoft.json"
+]
+);
 let referencesNotRemoved = dynamic (
 [
 "microsoft.aspnetcore.antiforgery",
@@ -141,5 +150,5 @@ All("FunctionsLogs")
 | extend reference = replace("Removed - ","",reference)
 | extend reference = replace(" - T","",reference)
 | extend reference = replace(" - M","",reference)
-| where reference in (referencesNotRemoved)
+| where reference in (referencesNotRemoved) or reference  in (referencesRemovedButDifferentVersionInV3)
 | summarize count() by assemblyNameString, apiString

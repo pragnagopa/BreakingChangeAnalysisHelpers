@@ -12,6 +12,15 @@ let knownAssembliesWithUdpatedVersion = dynamic (
 "Microsoft.Azure.SignalR"// look at target framework...net standard 2.0 
 ]
 );
+let referencesRemovedButDifferentVersionInV3 = dynamic (
+[
+"microsoft.aspnetcore.authentication.jwtbearer",
+"microsoft.aspnetcore.jsonpatch",
+"microsoft.codeanalysis"
+//"microsoft.extensions.diagnosticadapter",
+//"newtonsoft.json"
+]
+);
 let referencesNotRemoved = dynamic (
 [
 "microsoft.aspnetcore.antiforgery",
@@ -147,7 +156,7 @@ All("FunctionsLogs")
 | extend idxErrorType = indexof(reference,"-")
 | extend errorType = substring(reference, 0, idxErrorType)
 | extend reference = substring(reference, idxErrorType + 2, strlen(reference))
-| where reference in (referencesNotRemoved)
+| where reference in (referencesNotRemoved) or reference in (referencesRemovedButDifferentVersionInV3)
 | extend methodRemoved = substring(apiString, idx -1, strlen(apiString))
 | extend idxBracket = indexof(methodRemoved, "(")
 | extend idxBracket=iff(idxBracket == -1, strlen(methodRemoved) , idxBracket)

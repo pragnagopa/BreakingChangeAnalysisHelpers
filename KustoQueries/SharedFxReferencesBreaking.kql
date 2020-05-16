@@ -1,3 +1,12 @@
+let referencesRemovedButDifferentVersionInV3 = dynamic (
+[
+"microsoft.aspnetcore.authentication.jwtbearer",
+"microsoft.aspnetcore.jsonpatch",
+"microsoft.codeanalysis"
+//"microsoft.extensions.diagnosticadapter",
+//"newtonsoft.json"
+]
+);
 let referencesNotRemoved = dynamic (
 [
 "microsoft.aspnetcore.antiforgery",
@@ -132,7 +141,7 @@ All("FunctionsLogs")
 | extend idxErrorType = indexof(reference,"-")
 | extend errorType = substring(reference, 0, idxErrorType)
 | extend reference = substring(reference, idxErrorType + 2, strlen(reference))
-| where reference in (referencesNotRemoved)
+| where reference in (referencesNotRemoved) or reference in (referencesRemovedButDifferentVersionInV3)
 //| summarize count() by  reference
 //| summarize count() by  tostring(d_AssemblyName),tostring(d_AssemblyVersion), apiString 
 | summarize count() by AppName

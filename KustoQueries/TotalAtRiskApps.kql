@@ -1,3 +1,12 @@
+let referencesRemovedButDifferentVersionInV3 = dynamic (
+[
+"microsoft.aspnetcore.authentication.jwtbearer",
+"microsoft.aspnetcore.jsonpatch",
+"microsoft.codeanalysis"
+//"microsoft.extensions.diagnosticadapter",
+//"newtonsoft.json"
+]
+);
 let referencesNotRemoved = dynamic (
 [
 "microsoft.aspnetcore.antiforgery",
@@ -154,7 +163,7 @@ All("FunctionsLogs")
 | extend idxErrorType = indexof(reference,"-")
 | extend errorType = substring(reference, 0, idxErrorType)
 | extend reference = substring(reference, idxErrorType + 2, strlen(reference))
-| where reference in (referencesNotRemoved) or  reference in (referencesRemovedNoDirectReferences)
+| where reference in (referencesNotRemoved) or  reference in (referencesRemovedNoDirectReferences) or reference in (referencesRemovedButDifferentVersionInV3)
 | where reference != "newtonsoft.json" // figure out why not in site extension
 | distinct AppName
  
