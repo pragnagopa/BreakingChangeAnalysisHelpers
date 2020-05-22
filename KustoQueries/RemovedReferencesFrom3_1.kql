@@ -24,10 +24,10 @@ let referencesRemovedReferencesFromSharedFx3_1 = dynamic (
 ]
 );
 All("FunctionsLogs")
-| where TIMESTAMP > ago(5d)
+| where TIMESTAMP > ago(10d)
 | where Source == "Microsoft.Azure.WebJobs.Script.ChangeAnalysis.ChangeAnalysisService"
 | where Level == 5
-| where HostVersion startswith "2" 
+| where HostVersion startswith "2.0." 
 | extend d = parse_json(Summary)
 | extend parsedApis = parse_json(d.ProblematicApis)
 | project SubscriptionId, AppName, HostVersion, d.BinHash, d.AssemblyName , d.AssemblyVersion, d.AssemblyCulture, d.TargetFrameworkMoniker, d.Architecture, d.CorFlags, d.ImageVersion, d.HasCircularMetadata, d.HasNotSupportedMetadata, d.HasInvalidTokens, d.ProblematicApis, parsedApis
@@ -44,6 +44,7 @@ All("FunctionsLogs")
 //| summarize count() by  AppName, reference
 //| summarize count() by AppName
 //| summarize count() by  AppName, apiString
-| summarize count() by  tostring(d_AssemblyName), apiString
+//| summarize count() by  tostring(d_AssemblyName), apiString
 //| summarize count() by   reference
+| distinct AppName
  

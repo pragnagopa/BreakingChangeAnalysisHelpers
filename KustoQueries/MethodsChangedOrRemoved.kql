@@ -206,10 +206,10 @@ let referencesNotRemoved = dynamic (
 );
 let allLogs = (
 All("FunctionsLogs")
-| where TIMESTAMP > ago(5d)
+| where TIMESTAMP > ago(10d)
 | where Source == "Microsoft.Azure.WebJobs.Script.ChangeAnalysis.ChangeAnalysisService"
 | where Level == 5
-| where HostVersion startswith "2.0" 
+| where HostVersion startswith "2.0." 
 | extend d = parse_json(Summary)
 | extend parsedApis = parse_json(d.ProblematicApis)
 | project AppName, HostVersion, d.BinHash, d.AssemblyName , d.AssemblyVersion, d.AssemblyCulture, d.TargetFrameworkMoniker, d.Architecture, d.CorFlags, d.ImageVersion, d.HasCircularMetadata, d.HasNotSupportedMetadata, d.HasInvalidTokens, d.ProblematicApis, parsedApis
@@ -221,8 +221,8 @@ All("FunctionsLogs")
 | where apiString !=""
 | where apiString !in  (safeErrorsToIgnore)
 | where apiString !in (errorsFromInterfaceChanges)
-| where apiString !in (obosoleteMethods)
-| where apiString !in (userActionNeededErrors)
+//| where apiString !in (obosoleteMethods)
+//| where apiString !in (userActionNeededErrors)
 | where apiString !in (errorsFromInheritance)
 | extend idx = indexof(apiString,":")
 | extend reference = substring(apiString, 0, idx)
