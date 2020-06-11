@@ -1,3 +1,11 @@
+let safeErrorsToIgnore = dynamic(
+[
+"Removed - microsoft.extensions.configuration - M:Microsoft.Extensions.Configuration.ConfigurationSection.#ctor(Microsoft.Extensions.Configuration.ConfigurationRoot,System.String)",
+"Removed - microsoft.aspnetcore.mvc.formatters.json - M:Microsoft.AspNetCore.Mvc.JsonResult.set_SerializerSettings(Newtonsoft.Json.JsonSerializerSettings)",
+"Removed - microsoft.aspnetcore.mvc.formatters.json - M:Microsoft.AspNetCore.Mvc.JsonResult.#ctor(System.Object,Newtonsoft.Json.JsonSerializerSettings)",
+"ChangedBaseClass - microsoft.aspnetcore.mvc.viewfeatures - T:Microsoft.AspNetCore.Mvc.RemoteAttribute"
+]
+);
 let referencesRemovedNoDirectReferences = dynamic (
 [
 "microsoft.aspnetcore.authentication.facebook",
@@ -159,6 +167,7 @@ All("FunctionsLogs")
 | extend assemblyNameString = tostring(d_AssemblyName)
 | extend apiString = tostring(parsedApis)
 | where apiString !=""
+| where apiString !in (safeErrorsToIgnore)
 | extend idx = indexof(apiString,":")
 | extend reference = substring(apiString, 0, idx)
 | extend reference = replace(" - T","",reference)
@@ -184,21 +193,29 @@ allLogs
 | where apiString contains "T:"
 | summarize by typeRemoved
 );
+let appsWithRemovedRefs = (
+allLogs
+| where reference in (referencesRemovedNoDirectReferences)
+| distinct AppName
+);
 // Get the list of apps using types removed
 let appsWithTypesRemoved = (
 allLogs
+| where reference !in (referencesRemovedNoDirectReferences)
 | where apiString contains "Removed - "
 | where apiString contains "T:"
 | distinct AppName
 );
-appsWithTypesRemoved
-| union 
+let appsWithMethodsRemovedOrChanged = (
 allLogs
+| where reference !in (referencesRemovedNoDirectReferences)
 | where methodRemoved !in (typesRemoved)
 | where typeRemoved !in (typesRemoved)
-//| summarize count() by apiString//, assemblyNameString, tostring(d_AssemblyVersion), tostring(d_TargetFrameworkMoniker)
-//| summarize count() by AppName, assemblyNameString, apiString
-|distinct AppName 
-
-//| project apiString, reference, typeRemoved, methodRemoved  
-    
+| distinct AppName 
+);
+appsWithRemovedRefs
+| union 
+appsWithTypesRemoved
+| union 
+appsWithMethodsRemovedOrChanged
+|distinct AppName    

@@ -1,4 +1,11 @@
-let subId = "{subid}";
+let safeErrorsToIgnore = dynamic(
+[
+"Removed - microsoft.extensions.configuration - M:Microsoft.Extensions.Configuration.ConfigurationSection.#ctor(Microsoft.Extensions.Configuration.ConfigurationRoot,System.String)",
+"Removed - microsoft.aspnetcore.mvc.formatters.json - M:Microsoft.AspNetCore.Mvc.JsonResult.set_SerializerSettings(Newtonsoft.Json.JsonSerializerSettings)",
+"Removed - microsoft.aspnetcore.mvc.formatters.json - M:Microsoft.AspNetCore.Mvc.JsonResult.#ctor(System.Object,Newtonsoft.Json.JsonSerializerSettings)",
+"ChangedBaseClass - microsoft.aspnetcore.mvc.viewfeatures - T:Microsoft.AspNetCore.Mvc.RemoteAttribute"
+]
+);
 let referencesRemovedReferencesFromSharedFx3_1 = dynamic (
 [
 "microsoft.aspnetcore.authentication.facebook",
@@ -149,11 +156,11 @@ let referencesNotRemoved = dynamic (
 );
 let allLogs = (
 All("FunctionsLogs")
-| where TIMESTAMP > ago(5d)
+| where TIMESTAMP > ago(10d)
 | where SubscriptionId == subId
 | where Source == "Microsoft.Azure.WebJobs.Script.ChangeAnalysis.ChangeAnalysisService"
 | where Level == 5
-| where HostVersion startswith "2.0" 
+| where HostVersion startswith "2.0." 
 | extend d = parse_json(Summary)
 | extend parsedApis = parse_json(d.ProblematicApis)
 | project SubscriptionId, AppName, HostVersion, d.BinHash, d.AssemblyName , d.AssemblyVersion, d.AssemblyCulture, d.TargetFrameworkMoniker, d.Architecture, d.CorFlags, d.ImageVersion, d.HasCircularMetadata, d.HasNotSupportedMetadata, d.HasInvalidTokens, d.ProblematicApis, parsedApis
@@ -161,6 +168,7 @@ All("FunctionsLogs")
 | mv-expand parsedApis
 | extend apiString = tostring(parsedApis)
 | where apiString !=""
+| where apiString !in (safeErrorsToIgnore)
 | extend assemblyNameString = tostring(d_AssemblyName)
 | extend idx = indexof(apiString,":")
 | extend reference = substring(apiString, 0, idx)
@@ -184,22 +192,32 @@ All("FunctionsLogs")
 // Get the list of types removed
 let typesRemoved = (
 allLogs
+| where reference !in (referencesRemovedReferencesFromSharedFx3_1)
 | where apiString contains "Removed - "
 | where apiString contains "T:"
 | summarize by typeRemoved
 );
+let errorsFromRemovedRefs = (
+allLogs
+| where reference in (referencesRemovedReferencesFromSharedFx3_1)
+);
 let errorsFromTypesRemoved = (
 allLogs
+| where reference !in (referencesRemovedReferencesFromSharedFx3_1)
 | where apiString contains "Removed - "
 | where apiString contains "T:"
-| distinct  AppName
+//| distinct  AppName
 //| summarize count() by  assemblyNameString, apiString
 );
-errorsFromTypesRemoved 
-| union 
+let errorsFromMethodsRemoved = (
 allLogs
+| where reference !in (referencesRemovedReferencesFromSharedFx3_1)
 | where methodRemoved !in (typesRemoved)
 | where typeRemoved !in (typesRemoved)
-//| summarize count() by  assemblyNameString, apiString
-| distinct  AppName
-//| summarize count() by SubscriptionId
+);
+errorsFromRemovedRefs
+| union 
+errorsFromTypesRemoved 
+| union 
+errorsFromMethodsRemoved
+| distinct AppName

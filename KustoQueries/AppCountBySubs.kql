@@ -1,3 +1,11 @@
+let safeErrorsToIgnore = dynamic(
+[
+"Removed - microsoft.extensions.configuration - M:Microsoft.Extensions.Configuration.ConfigurationSection.#ctor(Microsoft.Extensions.Configuration.ConfigurationRoot,System.String)",
+"Removed - microsoft.aspnetcore.mvc.formatters.json - M:Microsoft.AspNetCore.Mvc.JsonResult.set_SerializerSettings(Newtonsoft.Json.JsonSerializerSettings)",
+"Removed - microsoft.aspnetcore.mvc.formatters.json - M:Microsoft.AspNetCore.Mvc.JsonResult.#ctor(System.Object,Newtonsoft.Json.JsonSerializerSettings)",
+"ChangedBaseClass - microsoft.aspnetcore.mvc.viewfeatures - T:Microsoft.AspNetCore.Mvc.RemoteAttribute"
+]
+);
 let referencesRemovedButDifferentVersionInV3 = dynamic (
 [
 "microsoft.aspnetcore.authentication.jwtbearer",
@@ -158,6 +166,7 @@ All("FunctionsLogs")
 | mv-expand parsedApis
 | extend apiString = tostring(parsedApis)
 | where apiString !=""
+| where apiString !in (safeErrorsToIgnore)
 | extend assemblyNameString = tostring(d_AssemblyName)
 | extend idx = indexof(apiString,":")
 | extend reference = substring(apiString, 0, idx)
@@ -185,17 +194,27 @@ allLogs
 | where apiString contains "T:"
 | summarize by typeRemoved
 );
+let errorsRemovedRefs = (
+allLogs
+| where reference in (referencesRemovedReferencesFromSharedFx3_1)
+);
 let errorsFromTypesRemoved = (
 allLogs
 | where apiString contains "Removed - "
 | where apiString contains "T:"
-| summarize by SubscriptionId, AppName
+| where reference !in (referencesRemovedReferencesFromSharedFx3_1)
 );
-errorsFromTypesRemoved 
-| union 
+let errorsFromMethodsRemoved = (
 allLogs
+| where reference !in (referencesRemovedReferencesFromSharedFx3_1)
 | where methodRemoved !in (typesRemoved)
 | where typeRemoved !in (typesRemoved)
+);
+errorsRemovedRefs
+| union 
+errorsFromTypesRemoved 
+| union 
+errorsFromMethodsRemoved
 | summarize by SubscriptionId, AppName
 | summarize  count() by   SubscriptionId
   
