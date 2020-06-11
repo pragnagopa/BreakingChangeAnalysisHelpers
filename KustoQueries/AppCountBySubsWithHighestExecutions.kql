@@ -1,10 +1,13 @@
-let subsWithHighExeCount = (
+let highExeCount = (
 cluster('wawseus').database("wawsprod").WawsAn_omgsitefunctionsentity
 | where pdate >= ago(10d)// and ExecutionCount > (PrevWeekExecutionCount/7)
 | where Subscription !startswith "sla-func-prod"
 | project Subscription, FunctionName, FunctionId, ExecutionCount, PrevWeekExecutionCount
 | order by ExecutionCount desc
 | take 10000
+);
+let subsWithHighExeCount = (
+highExeCount
 | distinct  Subscription
 );
 let safeErrorsToIgnore = dynamic(
@@ -219,6 +222,7 @@ allLogs
 | where methodRemoved !in (typesRemoved)
 | where typeRemoved !in (typesRemoved)
 );
+let subsWithProblematicApisAndHighExeCount = (
 errorsRemovedRefs
 | union 
 errorsFromTypesRemoved 
@@ -227,4 +231,12 @@ errorsFromMethodsRemoved
 | summarize by SubscriptionId, AppName
 | summarize  count() by   SubscriptionId
 | where SubscriptionId in (subsWithHighExeCount)
+| distinct SubscriptionId
+);
+highExeCount
+| where Subscription in (subsWithProblematicApisAndHighExeCount)
+| order by ExecutionCount desc 
+| distinct Subscription
+
+
   
