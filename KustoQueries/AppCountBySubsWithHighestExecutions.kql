@@ -4,8 +4,8 @@ cluster('wawseus').database("wawsprod").WawsAn_omgsitefunctionsentity
 | where Subscription !startswith "sla-func-prod"
 | project Subscription, FunctionName, FunctionId, ExecutionCount, PrevWeekExecutionCount
 | order by ExecutionCount desc
-| project Subscription
-| take 500
+| take 10000
+| distinct  Subscription
 );
 let safeErrorsToIgnore = dynamic(
 [
