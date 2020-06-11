@@ -1,3 +1,4 @@
+let subId = "{subid}";
 let safeErrorsToIgnore = dynamic(
 [
 "Removed - microsoft.extensions.configuration - M:Microsoft.Extensions.Configuration.ConfigurationSection.#ctor(Microsoft.Extensions.Configuration.ConfigurationRoot,System.String)",
