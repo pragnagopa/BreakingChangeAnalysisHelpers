@@ -1,4 +1,4 @@
-let numberofdays = ago(5d);
+let numberofdays = ago(10d);
 let appsWithNoStorage = (
 All("FunctionsLogs")
 | where TIMESTAMP > numberofdays
