@@ -1,4 +1,5 @@
 let subId = "{subid}";
+let numberOfDays = ago(10d);
 let safeErrorsToIgnore = dynamic(
 [
 "Removed - microsoft.extensions.configuration - M:Microsoft.Extensions.Configuration.ConfigurationSection.#ctor(Microsoft.Extensions.Configuration.ConfigurationRoot,System.String)",
@@ -156,7 +157,7 @@ let referencesNotRemoved = dynamic (
 );
 let allLogs = (
 All("FunctionsLogs")
-| where TIMESTAMP > ago(5d)
+| where TIMESTAMP > numberOfDays
 | where SubscriptionId == subId
 | where Source == "Microsoft.Azure.WebJobs.Script.ChangeAnalysis.ChangeAnalysisService"
 | where Level == 5
