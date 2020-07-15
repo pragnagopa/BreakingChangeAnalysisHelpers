@@ -1,0 +1,22 @@
+let numberofdays = ago(5d);
+let appsWithNoStorage = (
+All("FunctionsLogs")
+| where TIMESTAMP > numberofdays
+| where AppName != "functionswarmupsite"
+| where SubscriptionId != "FunctionsWarmupSub"
+| where AppName !startswith "sla-ws-func-prod"
+| where Source == "Microsoft.Azure.WebJobs.Script.ChangeAnalysis.ChangeAnalysisService"
+| where Level == 3
+| where HostVersion startswith "2.0." 
+| distinct  SubscriptionId,AppName,SourceNamespace
+);
+appsWithNoStorage
+| join (
+FunctionsMetrics
+| where TIMESTAMP > numberofdays
+| where EventName == "host.startup.runtime.language.dotnet"
+| where SubscriptionId != "FunctionsWarmupSub"
+| where AppName != "functionswarmupsite"
+| where AppName !startswith "sla-ws-func-prod"
+) on AppName
+| distinct  SubscriptionId,AppName,EventName
