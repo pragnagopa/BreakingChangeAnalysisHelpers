@@ -12,7 +12,7 @@ All("FunctionsLogs")
 );
 appsWithNoStorage
 | join (
-FunctionsMetrics
+All("FunctionsMetrics")
 | where TIMESTAMP > numberofdays
 | where EventName == "host.startup.runtime.language.dotnet"
 | where SubscriptionId != "FunctionsWarmupSub"
