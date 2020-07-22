@@ -8,6 +8,7 @@ All("FunctionsLogs")
 | where Source == "Microsoft.Azure.WebJobs.Script.ChangeAnalysis.ChangeAnalysisService"
 | where Level == 3
 | where HostVersion startswith "2.0." 
+| where Details contains "System.InvalidOperationException : The BlobChangeAnalysisStateProvider requires the default storage account 'Storage', which is not defined."
 | distinct  SubscriptionId,AppName,SourceNamespace
 );
 appsWithNoStorage
