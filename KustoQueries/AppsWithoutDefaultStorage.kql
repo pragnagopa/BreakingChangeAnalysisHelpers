@@ -18,5 +18,6 @@ All("FunctionsMetrics")
 | where SubscriptionId != "FunctionsWarmupSub"
 | where AppName != "functionswarmupsite"
 | where AppName !startswith "sla-ws-func-prod"
+| distinct AppName, EventName
 ) on AppName
 | distinct  SubscriptionId,AppName,EventName
