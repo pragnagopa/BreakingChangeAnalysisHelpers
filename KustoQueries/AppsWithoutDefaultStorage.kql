@@ -7,18 +7,18 @@ All("FunctionsLogs")
 | where AppName !startswith "sla-ws-func-prod"
 | where Source == "Microsoft.Azure.WebJobs.Script.ChangeAnalysis.ChangeAnalysisService"
 | where Level == 3
-| where HostVersion startswith "2.0." 
 | where Details contains "System.InvalidOperationException : The BlobChangeAnalysisStateProvider requires the default storage account 'Storage', which is not defined."
-| distinct  SubscriptionId,AppName,SourceNamespace
+| where HostVersion startswith "2.0." 
+| distinct  SubscriptionId,AppName
 );
 appsWithNoStorage
-| join (
+| join kind = inner (
 All("FunctionsMetrics")
 | where TIMESTAMP > numberofdays
 | where EventName == "host.startup.runtime.language.dotnet"
 | where SubscriptionId != "FunctionsWarmupSub"
 | where AppName != "functionswarmupsite"
 | where AppName !startswith "sla-ws-func-prod"
-| distinct AppName, EventName
+| distinct  SubscriptionId,AppName
 ) on AppName
-| distinct  SubscriptionId,AppName,EventName
+| distinct  SubscriptionId,AppName
