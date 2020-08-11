@@ -1,3 +1,5 @@
+let startTime = ago(5d);
+let endTime = now();
 let safeErrorsToIgnore = dynamic(
 [
 "Removed - microsoft.extensions.configuration - M:Microsoft.Extensions.Configuration.ConfigurationSection.#ctor(Microsoft.Extensions.Configuration.ConfigurationRoot,System.String)",
@@ -155,10 +157,16 @@ let referencesNotRemoved = dynamic (
 );
 let allLogs = (
 All("FunctionsLogs")
-| where TIMESTAMP > ago(10d)
+| where TIMESTAMP > startTime and TIMESTAMP < endTime
+| where AppName != "functionswarmupsite"
+| where SubscriptionId != "FunctionsWarmupSub"
+| where AppName !startswith "sla-ws-func-prod"
+| where HostVersion startswith "2.0." 
+);
+let allBreakingChangeLogs = (
+allLogs
 | where Source == "Microsoft.Azure.WebJobs.Script.ChangeAnalysis.ChangeAnalysisService"
 | where Level == 5
-| where HostVersion startswith "2.0." 
 | extend d = parse_json(Summary)
 | extend parsedApis = parse_json(d.ProblematicApis)
 | project SubscriptionId, AppName, HostVersion, d.BinHash, d.AssemblyName , d.AssemblyVersion, d.AssemblyCulture, d.TargetFrameworkMoniker, d.Architecture, d.CorFlags, d.ImageVersion, d.HasCircularMetadata, d.HasNotSupportedMetadata, d.HasInvalidTokens, d.ProblematicApis, parsedApis
@@ -188,34 +196,59 @@ All("FunctionsLogs")
 );
 // Get the list of types removed
 let typesRemoved = (
-allLogs
+allBreakingChangeLogs
 | where apiString contains "Removed - "
 | where apiString contains "T:"
 | summarize by typeRemoved
 );
 let appsWithRemovedRefs = (
-allLogs
+allBreakingChangeLogs
 | where reference in (referencesRemovedNoDirectReferences)
-| summarize by SubscriptionId, AppName
+| distinct AppName
 );
 // Get the list of apps using types removed
 let appsWithTypesRemoved = (
-allLogs
+allBreakingChangeLogs
 | where reference !in (referencesRemovedNoDirectReferences)
 | where apiString contains "Removed - "
 | where apiString contains "T:"
-| distinct SubscriptionId, AppName
+| distinct SubscriptionId, AppName 
 );
 let appsWithMethodsRemovedOrChanged = (
-allLogs
+allBreakingChangeLogs
 | where reference !in (referencesRemovedNoDirectReferences)
 | where methodRemoved !in (typesRemoved)
 | where typeRemoved !in (typesRemoved)
 | distinct SubscriptionId, AppName 
 );
+let TotalAtRiskApps =(
 appsWithRemovedRefs
 | union 
 appsWithTypesRemoved
 | union 
 appsWithMethodsRemovedOrChanged
-|distinct SubscriptionId, AppName    
+| summarize by SubscriptionId, AppName 
+| distinct SubscriptionId, AppName   
+);
+let TotalApps =(
+allLogs
+|summarize by SubscriptionId, AppName 
+| distinct SubscriptionId, AppName   
+);
+let TotalAppsNotAtRisk = (
+TotalApps 
+|join kind=leftanti TotalAtRiskApps on AppName
+);
+TotalAppsNotAtRisk
+| join kind = inner (
+All("FunctionsMetrics")
+| where TIMESTAMP > startTime and TIMESTAMP < endTime
+| where EventName == "host.startup.runtime.language.dotnet"
+| where SubscriptionId != "FunctionsWarmupSub"
+| where AppName != "functionswarmupsite"
+| where AppName !startswith "sla-ws-func-prod"
+| where HostVersion startswith "2.0." 
+| distinct  SubscriptionId,AppName
+) on AppName
+| distinct  SubscriptionId,AppName
+
