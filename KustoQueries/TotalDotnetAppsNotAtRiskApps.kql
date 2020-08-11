@@ -160,6 +160,7 @@ All("FunctionsLogs")
 | where TIMESTAMP > startTime and TIMESTAMP < endTime
 | where AppName != "functionswarmupsite"
 | where SubscriptionId != "FunctionsWarmupSub"
+| where SubscriptionId != "FunctionsPlaceholderTemplateSub"
 | where AppName !startswith "sla-ws-func-prod"
 | where HostVersion startswith "2.0." 
 );
