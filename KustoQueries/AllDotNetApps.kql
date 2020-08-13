@@ -1,0 +1,6 @@
+WawsAn_omgsitefunctionsentity
+| where pdate > ago(30d)
+| where Stack contains "dotnet" or Stack contains "C#"
+| where HostVersion startswith "2.0."
+| summarize by Subscription, SiteName
+| distinct Subscription,SiteName

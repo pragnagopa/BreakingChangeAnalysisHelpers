@@ -58,9 +58,9 @@ namespace PgopaBreakingChangeFunctionApp
             ClientModelValidationContext context = null;
             castRemoteAttribute2.AddValidation(context);
             IHostingEnvironment he = null;
-            StaticFileMiddleware sf = new StaticFileMiddleware(null, he, null, null);
+            //StaticFileMiddleware sf = new StaticFileMiddleware(null, he, null, null);
 
-            DefaultHttpRequest defaultHttpRequest = new DefaultHttpRequest(new DefaultHttpContext());
+            //DefaultHttpRequest defaultHttpRequest = new DefaultHttpRequest(new DefaultHttpContext());
 
             //FacebookOptions fbOptions = new FacebookOptions();
             //DatabaseErrorPageMiddleware databaseErrorPageMiddleware = new DatabaseErrorPageMiddleware(null, null, null);

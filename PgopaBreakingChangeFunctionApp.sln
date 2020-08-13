@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "pgopaBreakingChangeAppV2", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleAppFramework", "ConsoleAppFramework\ConsoleAppFramework.csproj", "{5F17704C-3E0E-45E4-A404-4C3CEB8EB41A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplication2.2", "WebApplication2.2\WebApplication2.2.csproj", "{16FBAF76-F2C8-4281-9FD0-3032776C424F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppsAndSubs", "AppsAndSubs\AppsAndSubs.csproj", "{1C110DAC-A3E3-4857-A82F-ABBF7BE99234}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,10 +35,10 @@ Global
 		{5F17704C-3E0E-45E4-A404-4C3CEB8EB41A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5F17704C-3E0E-45E4-A404-4C3CEB8EB41A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5F17704C-3E0E-45E4-A404-4C3CEB8EB41A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{16FBAF76-F2C8-4281-9FD0-3032776C424F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{16FBAF76-F2C8-4281-9FD0-3032776C424F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{16FBAF76-F2C8-4281-9FD0-3032776C424F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{16FBAF76-F2C8-4281-9FD0-3032776C424F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1C110DAC-A3E3-4857-A82F-ABBF7BE99234}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1C110DAC-A3E3-4857-A82F-ABBF7BE99234}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1C110DAC-A3E3-4857-A82F-ABBF7BE99234}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1C110DAC-A3E3-4857-A82F-ABBF7BE99234}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
