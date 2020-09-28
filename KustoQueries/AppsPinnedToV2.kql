@@ -1,0 +1,9 @@
+All("FunctionsLogs")
+| where PreciseTimeStamp > ago(5d)
+| where SubscriptionId != "FunctionsPlaceholderTemplateSub"
+| where SubscriptionId != "FunctionsWarmupSub"
+| where Source == "Host.Startup"
+| where HostVersion startswith "2.0."
+| where Summary contains "FunctionsExtensionVersion=~2.0"
+| project PreciseTimeStamp, Source, Summary, HostVersion, AppName, SubscriptionId
+| summarize by SubscriptionId, AppName
