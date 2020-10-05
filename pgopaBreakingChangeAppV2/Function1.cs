@@ -50,7 +50,7 @@ namespace pgopaBreakingChangeAppV2
                 { "key2", "val" }
             };
             IHostingEnvironment he = null;
-            StaticFileMiddleware sf = new StaticFileMiddleware(null, he, null, null);
+            //StaticFileMiddleware sf = new StaticFileMiddleware(null, he, null, null);
             QueryCollection qc = new QueryCollection(queryParamsDictionary);
 
             log.LogInformation($"C# HTTP trigger function  accessing qc:{qc.Count}");
@@ -60,7 +60,7 @@ namespace pgopaBreakingChangeAppV2
             IDataReader reader;
             JObject x = new JObject();
             //ODataMessageWriterSettings settings = new ODataMessageWriterSettings();
-            SqlConnection connection = new SqlConnection("");
+            //SqlConnection connection = new SqlConnection("");
 
             string name = req.Query["name"];
 

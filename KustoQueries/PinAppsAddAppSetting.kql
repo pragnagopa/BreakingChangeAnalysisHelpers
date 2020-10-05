@@ -1,0 +1,10 @@
+let appsToPin = dynamic(
+[
+]);
+All("SubscriptionHostNameMapping")
+| where PreciseTimeStamp > ago(1d)
+| where SiteName in (appsToPin)
+| distinct SiteName, SubscriptionId, EventPrimaryStampName ,Webspace
+| project strcat("\"AddWebSiteAppSettings  ", SubscriptionId, "  ", Webspace, "  ", SiteName, "  FUNCTIONS_EXTENSION_VERSION=~2.0", "\", ","\"", EventPrimaryStampName, "\"", ",")
+
+
