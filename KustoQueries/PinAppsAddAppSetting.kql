@@ -1,10 +1,36 @@
 let appsToPin = dynamic(
 [
-]);
+]
+);
+let v3Apps = (
+All("FunctionsLogs")
+| where PreciseTimeStamp > ago(10d)
+| where AppName  in (appsToPin)
+| distinct HostVersion, AppName
+| where HostVersion startswith "3.0."
+| distinct  AppName
+);
+let v2AppsPinnedToVersion = (
+All("FunctionsLogs")
+| where PreciseTimeStamp > ago(10d)
+| where AppName  in (appsToPin)
+| where HostVersion == "2.0.13351.0" or HostVersion == "2.0.13351"
+| where Source == "Host.Startup"
+| distinct HostVersion, AppName, Summary
+| where Summary contains "FunctionsExtensionVersion=2.0.13351"
+| distinct  AppName
+);
+let appsFound =(
 All("SubscriptionHostNameMapping")
-| where PreciseTimeStamp > ago(1d)
-| where SiteName in (appsToPin)
+| where PreciseTimeStamp > ago(5d)
+| where SiteName in (appsToPin) 
+| where SiteName !in (v3Apps)
+| where SiteName  !in (v2AppsPinnedToVersion)
 | distinct SiteName, SubscriptionId, EventPrimaryStampName ,Webspace
-| project strcat("\"AddWebSiteAppSettings  ", SubscriptionId, "  ", Webspace, "  ", SiteName, "  FUNCTIONS_EXTENSION_VERSION=~2.0", "\", ","\"", EventPrimaryStampName, "\"", ",")
+| extend cmd = strcat("\"AddWebSiteAppSettings  ", SubscriptionId, "  ", Webspace, "  ", SiteName, "  FUNCTIONS_EXTENSION_VERSION=~2.0", "\", ","\"", EventPrimaryStampName, "\"", ",")
+);
+appsFound
+| project cmd
+
 
 
