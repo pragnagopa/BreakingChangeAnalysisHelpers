@@ -1,0 +1,17 @@
+let appWithListOfSubs = "{appWithListOfSubs}";
+FunctionsLogs
+| where PreciseTimeStamp > datetime(2020-10-26 22:15:00) and PreciseTimeStamp  < datetime(2020-10-26 22:25:45.3558667)
+| where AppName =~ appWithListOfSubs
+| where EventPrimaryStampName == "waws-prod-sn1-155"
+| where Source == "Host.General.BreakingApp"
+| parse  Summary with * "SubId="subId",AppId="appId"---end---" *
+| extend  subId = tolower(subId)
+| extend  appId = tolower(appId)
+| join kind=inner (
+All("SubscriptionHostNameMapping")
+| where PreciseTimeStamp > ago(5d)
+| extend SiteName=tolower(SiteName) 
+| distinct SiteName, SubscriptionId, EventPrimaryStampName ,Webspace
+| extend cmd = strcat("\"AddWebSiteAppSettings  ", SubscriptionId, "  ", Webspace, "  ", SiteName, "  FUNCTIONS_EXTENSION_VERSION=~2.0", "\", ","\"", EventPrimaryStampName, "\"", ",")
+) on $left.appId == $right.SiteName and $left.subId == $right.SubscriptionId
+| project cmd
