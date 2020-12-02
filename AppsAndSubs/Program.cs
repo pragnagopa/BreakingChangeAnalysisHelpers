@@ -10,30 +10,78 @@ namespace AppsAndSubs
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
-            string file1 = @"C:\pgopa\BreakingChangeAnalysis\DotnetAppsNotAtRisk\AllDotnetAppsNoStoagePast10days.csv";
-            string file2 = @"C:\pgopa\BreakingChangeAnalysis\DotnetAppsNotAtRisk\AllDotnetAppsNoStoagePast20-10days.csv";
-            string file3 = @"C:\pgopa\BreakingChangeAnalysis\DotnetAppsNotAtRisk\AllDotnetAppsNoStoagePast30-20days.csv";
-            var dotNetAppsNoStorage = CombineAndRemoveDuplicates(new string[] { file1, file2, file3 });
 
-            string allDotNetAppsFile = @"C:\pgopa\BreakingChangeAnalysis\DotnetAppsNotAtRisk\AllDotnetAppsPast30days.csv";
-            Dictionary<string, string> allDotNetApps = ToAppsAndSubsDict(File.ReadAllLines(allDotNetAppsFile));
+            var percentileResult = 1191 % 14;
 
-            Dictionary<string, string> allDotNetAppsWithStorage = allDotNetApps.Where(a => !dotNetAppsNoStorage.Keys.Contains(a.Key)).ToDictionary(a => a.Key, a => a.Value);
 
-            string donetBreakingAppsFile1 = @"C:\pgopa\BreakingChangeAnalysis\DotnetAppsNotAtRisk\DotNetAppsWithBreakingChangespast5days.csv";
-            string donetBreakingAppsFile2 = @"C:\pgopa\BreakingChangeAnalysis\DotnetAppsNotAtRisk\DotNetAppsWithBreakingChangespast10To5days.csv";
-            string donetBreakingAppsFile3 = @"C:\pgopa\BreakingChangeAnalysis\DotnetAppsNotAtRisk\DotNetAppsWithBreakingChangespast15To10days.csv";
-            string donetBreakingAppsFile4 = @"C:\pgopa\BreakingChangeAnalysis\DotnetAppsNotAtRisk\DotNetAppsWithBreakingChangespast20To15days.csv";
-            string donetBreakingAppsFile5 = @"C:\pgopa\BreakingChangeAnalysis\DotnetAppsNotAtRisk\DotNetAppsWithBreakingChangespast25To20days.csv";
-            string donetBreakingAppsFile6 = @"C:\pgopa\BreakingChangeAnalysis\DotnetAppsNotAtRisk\DotNetAppsWithBreakingChangespast30To25days.csv";
+            string[] linuxAppsWithBreakingChangesAppService = Directory.GetFiles(@"C:\pgopa\BreakingChangeAnalysis\PinningV2Linuxconsumption");
+            var resultlinuxApps = CombineAndRemoveDuplicates(linuxAppsWithBreakingChangesAppService);
+            File.WriteAllLines("PublicLinuxAppsWithBreakingChangesConsumption.csv", resultlinuxApps.Select(s => $"SubId={s.Value},AppId={s.Key}---end---"));
 
-            Dictionary<string, string> dotNetAppsBreaking = CombineAndRemoveDuplicates(new string[] { donetBreakingAppsFile1, donetBreakingAppsFile2, donetBreakingAppsFile3, donetBreakingAppsFile4, donetBreakingAppsFile5, donetBreakingAppsFile6 });
+            //var shuffledcards = appsAndSubsWithoutStorageAccount.OrderBy(a => Guid.NewGuid()).ToList();
+            //SplitFiles();
 
-            Dictionary<string, string> allDotNetAppsNotBreaking = allDotNetAppsWithStorage.Where(a => !dotNetAppsBreaking.Keys.Contains(a.Key)).ToDictionary(a => a.Key, a => a.Value);
 
-            File.WriteAllLines("AllDotNetNonBreakingApps.csv", allDotNetAppsNotBreaking.Select(s => $"{s.Value},{s.Key}"));
+            //string[] linuxAppsWithBreakingChanges = Directory.GetFiles(@"C:\pgopa\BreakingChangeAnalysis\LinuxAppsWithBreakingChanges");
+            //var resultlinuxApps = CombineAndRemoveDuplicates(linuxAppsWithBreakingChanges);
+            //File.WriteAllLines("PublicLinuxAppsWithBreakingChanges.csv", resultlinuxApps.Select(s => $"{s.Value},{s.Key}"));
 
+            //WriteAppNames(@"C:\pgopa\BreakingChangeAnalysis\TotalAtRiskApps09-28\PublicCloudBreakingApps.csv");
+
+            //string[] filesWithPinnedApps = Directory.GetFiles(@"C:\Users\pgopa\Downloads\PinnedToV2Apps09-28\PinnedToV2Apps09-28");
+            //var resultPinnedDictionary = CombineAndRemoveDuplicates(filesWithPinnedApps);
+            //File.WriteAllLines("PublicCloudPinnedApps.csv", resultPinnedDictionary.Select(s => $"{s.Value},{s.Key}"));
+
+            //string[] filesToCombine = Directory.GetFiles(@"C:\pgopa\BreakingChangeAnalysis\TotalAtRiskApps09-28");
+            //var resultDictionary = CombineAndRemoveDuplicates(filesToCombine);
+            //var breakingAppsNotPinned = resultDictionary.Where(k => !resultPinnedDictionary.ContainsKey(k.Key));
+            //File.WriteAllLines("PublicCloudBreakingApps.csv", breakingAppsNotPinned.Select(s => $"{s.Value},{s.Key}"));
+
+            //string dotNetAppsNoStorageFile = @"C:\pgopa\BreakingChangeAnalysis\DotnetAppsNotAtRisk\BlackForestDotnetAppsNoStorage.csv";
+            //var dotNetAppsNoStorage = ToAppsAndSubsDict(File.ReadAllLines(dotNetAppsNoStorageFile));
+
+            //string allDotNetAppsFile = @"C:\pgopa\BreakingChangeAnalysis\DotnetAppsNotAtRisk\BlackForestAllDotnetApps.csv";
+            //Dictionary<string, string> allDotNetApps = ToAppsAndSubsDict(File.ReadAllLines(allDotNetAppsFile));
+
+            //Dictionary<string, string> allDotNetAppsWithStorage = allDotNetApps.Where(a => !dotNetAppsNoStorage.Keys.Contains(a.Key)).ToDictionary(a => a.Key, a => a.Value);
+
+            //string donetBreakingAppsFile = @"C:\pgopa\BreakingChangeAnalysis\DotnetAppsNotAtRisk\BlackForestDotnetAppsBreaking.csv";
+            //Dictionary<string, string> dotNetAppsBreaking = ToAppsAndSubsDict(File.ReadAllLines(donetBreakingAppsFile));
+
+            //Dictionary<string, string> allDotNetAppsNotBreaking = allDotNetAppsWithStorage.Where(a => !dotNetAppsBreaking.Keys.Contains(a.Key)).ToDictionary(a => a.Key, a => a.Value);
+
+            //File.WriteAllLines("BlackForestAllDotNetNonBreakingApps.csv", allDotNetAppsNotBreaking.Select(s => $"{s.Value},{s.Key}"));
+
+        }
+
+        private static void SplitFiles(List<string> runCmds, string filePrefix)
+        {
+            int index = 0;
+            int fileCounter = 0;
+            List<string> cmds = new List<string>();
+            Dictionary<int, List<string>> cmdFilesDict = new Dictionary<int, List<string>>();
+            int totalFiles = runCmds.Count / 90;
+            foreach (var cmd in runCmds)
+            {
+                fileCounter = index % (totalFiles + 1);
+
+                if (cmdFilesDict.TryGetValue(fileCounter, out List<string> outList))
+                {
+                    outList.Add(cmd);
+                }
+                else
+                {
+                    cmdFilesDict.Add(fileCounter, new List<string>());
+                    cmdFilesDict[fileCounter].Add(cmd);
+                }
+
+                index++;
+            }
+
+            foreach (var dividedList in cmdFilesDict)
+            {
+                File.WriteAllLines($"filePrefix{dividedList.Key}.txt", dividedList.Value);
+            }
         }
 
         public static Dictionary<string, string> CombineAndRemoveDuplicates(string[] files)
@@ -46,6 +94,17 @@ namespace AppsAndSubs
             }
             result = ToAppsAndSubsDict(allLines);
             return result;
+        }
+
+        public static void WriteAppNames(string filePath)
+        {
+            IEnumerable<string> allLines = new List<string>();
+            allLines = allLines.Concat(File.ReadAllLines(filePath));
+            Dictionary<string, string> result = ToAppsAndSubsDict(allLines);
+            Random rand = new Random();
+            result = result.OrderBy(x => rand.Next())
+              .ToDictionary(item => item.Key, item => item.Value);
+            File.WriteAllLines("PublicCloudBreakingAppNames.txt", result.Select(s => $"\"{s.Key}\","));
         }
 
         private static Dictionary<string, string> ToAppsAndSubsDict(IEnumerable<string> allLines)

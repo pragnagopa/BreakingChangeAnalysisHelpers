@@ -2,19 +2,20 @@ let numberofdays = ago(10d);
 let appsWithNoStorage = (
 All("FunctionsLogs")
 | where TIMESTAMP > numberofdays
+| where HostVersion startswith "2.0." 
 | where AppName != "functionswarmupsite"
 | where SubscriptionId != "FunctionsWarmupSub"
 | where AppName !startswith "sla-ws-func-prod"
 | where Source == "Microsoft.Azure.WebJobs.Script.ChangeAnalysis.ChangeAnalysisService"
 | where Level == 3
 | where Details contains "System.InvalidOperationException : The BlobChangeAnalysisStateProvider requires the default storage account 'Storage', which is not defined."
-| where HostVersion startswith "2.0." 
 | distinct  SubscriptionId,AppName
 );
 appsWithNoStorage
 | join kind = inner (
 All("FunctionsMetrics")
 | where TIMESTAMP > numberofdays
+| where HostVersion startswith "2.0." 
 | where EventName == "host.startup.runtime.language.dotnet"
 | where SubscriptionId != "FunctionsWarmupSub"
 | where AppName != "functionswarmupsite"
@@ -22,3 +23,6 @@ All("FunctionsMetrics")
 | distinct  SubscriptionId,AppName
 ) on AppName
 | distinct  SubscriptionId,AppName
+| distinct AppName
+| extend AppArray = strcat(""",AppName, """)
+| project AppArray

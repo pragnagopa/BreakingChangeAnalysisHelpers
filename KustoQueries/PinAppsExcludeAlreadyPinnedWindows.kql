@@ -1,0 +1,66 @@
+let breakingAppsAndSubs = (
+cluster('wawscus.kusto.windows.net').database('wawsprod').FunctionsLogs
+| where AppName =~ "pgopapintov2helper"
+//| where PreciseTimeStamp > datetime(2020-12-01 18:40:16.9969063) and PreciseTimeStamp < datetime(2020-12-01 18:50:16.9969063)//UD2
+| where PreciseTimeStamp > datetime(2020-12-01 21:50:00) and PreciseTimeStamp < datetime(2020-12-01 22:00:16.9969063)//UD3
+| where Source == "Host.General.BreakingApp"
+| project Summary, PreciseTimeStamp
+| parse  Summary with * "SubId="subId",AppId="appId"---end---" *
+| extend  subId = tolower(subId)
+| extend  appId = tolower(appId)
+);
+let breakingApps = (
+breakingAppsAndSubs
+| distinct appId
+);
+let breakingAppSubs = (
+breakingAppsAndSubs
+| distinct subId
+);
+let pinnedApps = (
+FunctionsLogs
+| where TIMESTAMP > ago(5d)
+| where SourceNamespace != "LWAWS"
+| extend region = replace("waws-prod-", "",EventPrimaryStampName)
+| extend index = indexof(region,"-")
+| extend region = substring(region,0,index)
+//| where region in ("mwh") // UD2
+//| where region in ("ch1") // UD3
+| where region in ("am2") // UD4
+| where AppName in (breakingApps)
+| where Source == "Host.Startup"
+| where Summary endswith "FunctionsExtensionVersion=~2.0)"
+| distinct AppName
+);
+let v3Apps = (
+FunctionsLogs
+| where TIMESTAMP > ago(5d)
+| where SourceNamespace != "LWAWS"
+| extend region = replace("waws-prod-", "",EventPrimaryStampName)
+| extend index = indexof(region,"-")
+| extend region = substring(region,0,index)
+//| where region in ("mwh") // UD2
+//| where region in ("ch1") // UD3
+| where region in ("am2") // UD4
+| where AppName in (breakingApps)
+| where HostVersion startswith "3.0."
+| distinct AppName
+);
+SubscriptionHostNameMapping
+| where PreciseTimeStamp > ago(5d)
+| extend region = replace("waws-prod-", "",EventPrimaryStampName)
+| extend index = indexof(region,"-")
+| extend region = substring(region,0,index)
+//| where region in ("mwh") // UD2
+//| where region in ("ch1") // UD3
+| where region in ("am2") // UD4
+| extend SiteName=tolower(SiteName) 
+| where SiteName in (breakingApps) and SubscriptionId in (breakingAppSubs)
+| where SiteName !in (pinnedApps)
+| where SiteName !in (v3Apps)
+| distinct SiteName, SubscriptionId, EventPrimaryStampName ,Webspace
+| extend cmd = strcat("\"AddWebSiteAppSettings  ", SubscriptionId, "  ", Webspace, "  ", SiteName, "  FUNCTIONS_EXTENSION_VERSION=~2.0", "\", ","\"", EventPrimaryStampName, "\"", ",")
+| distinct SiteName
+
+| project cmd
+

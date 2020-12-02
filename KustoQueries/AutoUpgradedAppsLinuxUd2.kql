@@ -1,0 +1,21 @@
+let start = ago(2h);
+let targetVersion = "3.0.14916.0";
+let tilda2apps = (FunctionsLogs
+| where PreciseTimeStamp >= datetime(2020-11-11) and PreciseTimeStamp <= datetime(2020-11-13)
+| where HostVersion == "2.0.14786.0"
+| where EventPrimaryStampName contains "mwh"
+| where Role  == "Microsoft.ContainerInstance" //or Role contains "linux"
+| extend PreciseTimeStamp = make_datetime(EventTimestamp)
+| project PreciseTimeStamp, AppName, Source, FunctionName, Summary, Details, HostVersion, HostInstanceId
+| distinct AppName);
+FunctionsLogs
+| where PreciseTimeStamp > start
+| where EventPrimaryStampName contains "mwh"
+| where Role  == "Microsoft.ContainerInstance" //or Role contains "linux"
+| where AppName in (tilda2apps)
+| where HostVersion has targetVersion
+| where Details!=""
+| extend InnerExceptionMessage = substring(Details, 0, 1000) 
+| summarize SubCount=dcount(SubscriptionId), Example=any(Details) by InnerExceptionMessage
+| project SubCount, InnerExceptionMessage, Example
+| top 20 by SubCount desc

@@ -1,0 +1,93 @@
+cluster('wawscus.kusto.windows.net').database('wawsprod').GetRegions()
+| where Stage == 4
+
+FunctionsLogs
+| where PreciseTimeStamp >= datetime(2020-11-13 00:00:09.6776862) and PreciseTimeStamp <= datetime(2020-11-13 00:01:41.7514628)
+| where EventPrimaryStampName contains "mwh"
+| where Role  == "Microsoft.ContainerInstance" //or Role contains "linux"
+| where AppName == "azusw2-dream-stream-func"
+| where FunctionInvocationId != "" 
+| where HostVersion == "3.0.14916.0"
+| where Summary contains "Executed"
+| extend PreciseTimeStamp = make_datetime(EventTimestamp)
+| project PreciseTimeStamp, AppName, Source, FunctionName, Summary, Details, HostVersion, HostInstanceId
+
+let previousVersion = "2.0.14786.0";
+let newVersion = "3.0.14916.0";
+FunctionsLogs
+| where PreciseTimeStamp >= ago(4h)
+| where Level < 4
+| where EventPrimaryStampName contains "am2"
+| where Role  == "Microsoft.ContainerInstance" //or Role contains "linux"
+| where HostVersion has previousVersion or HostVersion has newVersion
+| where Details!=""
+| where AppName != ""
+| extend InnerExceptionMessage = substring(Details, 0, 500) 
+| summarize SubCount = dcount(SubscriptionId) by HostVersion, InnerExceptionMessage 
+| where SubCount > 2
+| evaluate diffpatterns(HostVersion, previousVersion, newVersion, SubCount)
+
+
+
+let start = ago(1d);
+let targetVersion = "3.0.14916.0";
+let tilda2apps = (FunctionsLogs
+| where PreciseTimeStamp >= datetime(2020-11-16) and PreciseTimeStamp < datetime(2020-11-17)
+| where HostVersion == "2.0.14786.0"
+| where EventPrimaryStampName contains "am2"
+| where Role  == "Microsoft.ContainerInstance" //or Role contains "linux"
+| distinct AppName);
+FunctionsLogs
+| where PreciseTimeStamp > start
+| where EventPrimaryStampName contains "am2"
+| where Role  == "Microsoft.ContainerInstance" //or Role contains "linux"
+| where AppName in (tilda2apps)
+| where HostVersion has targetVersion
+| where AppName != ""
+| where Details != ""
+| where Details contains "Exception"
+| extend Details = substring(Details, 0,500)
+| where Details !contains "System.OperationCanceledException : The AMQP object"
+| where Summary !contains "Language Worker Process exited"
+//| where Details contains "Microsoft.Azure.WebJobs.Script.Description.CompilationServiceException"
+//| summarize count() by Details
+| take 100
+| project PreciseTimeStamp,  Tenant, RoleInstance, AppName, Source, FunctionName, Summary, Details, HostVersion, HostInstanceId,FunctionInvocationId, Level
+
+
+FunctionsLogs
+| where PreciseTimeStamp > ago(1d)
+| where EventPrimaryStampName contains "Ch1"
+| where Role  == "Microsoft.ContainerInstance" //or Role contains "linux"
+| where Details contains "Microsoft.Azure.WebJobs.Script.Description.CompilationServiceException"
+| project PreciseTimeStamp, AppName, Source, FunctionName, Summary, Details, HostVersion, HostInstanceId,FunctionInvocationId, Level
+
+FunctionsLogs
+| where PreciseTimeStamp > ago(1d)// and PreciseTimeStamp < ago(2d)
+| where EventPrimaryStampName !contains "Ch1"
+| where HostVersion != "3.0.14916.0"
+| where Role  == "Microsoft.ContainerInstance" //or Role contains "linux"
+| where Details contains "Microsoft.Azure.WebJobs.Script.Description.CompilationServiceException"
+| take 100
+| project PreciseTimeStamp, AppName, Source, FunctionName, Summary, Details, HostVersion, HostInstanceId,FunctionInvocationId, Level
+
+
+| where Details!=""
+| extend InnerExceptionMessage = substring(Details, 0, 1000) 
+| summarize SubCount=dcount(SubscriptionId), Example=any(Details) by InnerExceptionMessage
+| project SubCount, InnerExceptionMessage, Example
+| top 20 by SubCount desc
+
+let start = ago(4h);
+let targetVersion = "2.0.14786.0";
+FunctionsLogs
+| where PreciseTimeStamp > start and PreciseTimeStamp < ago(2h)
+| where EventPrimaryStampName contains "mwh"
+| where Role  == "Microsoft.ContainerInstance" //or Role contains "linux"
+| where HostVersion has targetVersion
+| where Details!=""
+| extend InnerExceptionMessage = substring(Details, 0, 1000) 
+| summarize SubCount=dcount(SubscriptionId), Example=any(Details) by InnerExceptionMessage
+| project SubCount, InnerExceptionMessage, Example
+| top 20 by SubCount desc
+
